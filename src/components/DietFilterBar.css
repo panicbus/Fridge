@@ -1,0 +1,68 @@
+.diet-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin-bottom: 20px;
+  max-width: 520px;
+}
+
+.diet-filter-bar--compact {
+  margin-bottom: 0;
+  max-width: none;
+  width: 100%;
+}
+
+.diet-filter-bar-label {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.diet-filter-bar-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.diet-toggle {
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-tag);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.diet-toggle:hover {
+  color: var(--accent);
+  background: var(--accent-bg);
+  border-color: transparent;
+}
+
+.diet-toggle--active {
+  color: var(--accent);
+  background: var(--accent-bg);
+  border-color: var(--accent-dim);
+}
+
+.diet-toggle--active:hover {
+  border-color: transparent;
+}
+
+.diet-filter-bar--compact .diet-toggle {
+  padding: 5px 12px;
+  font-size: 12px;
+}
+
+.diet-filter-bar--compact .diet-filter-bar-label {
+  font-size: 11px;
+}

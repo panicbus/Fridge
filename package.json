@@ -1,0 +1,29 @@
+{
+  "name": "fridge",
+  "version": "0.1.0",
+  "description": "What's in your fridge? Get recipes.",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "compile:electron": "tsc -p tsconfig.electron.json",
+    "dev": "npm run compile:electron && concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
+    "build": "tsc && vite build && npm run compile:electron",
+    "preview": "vite preview",
+    "electron": "npm run compile:electron && electron ."
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "concurrently": "^8.2.0",
+    "electron": "^28.0.0",
+    "typescript": "^5.3.0",
+    "vite": "^5.0.0",
+    "wait-on": "^7.2.0"
+  }
+}
