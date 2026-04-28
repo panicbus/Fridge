@@ -1,0 +1,136 @@
+.pantry-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-pantry);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px 12px;
+  color: var(--text-cream);
+}
+
+.pantry-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.pantry-card-kicker {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-cream-muted);
+}
+
+.pantry-card-manage {
+  padding: 0;
+  margin: 0;
+  font-size: 11px;
+  color: var(--accent-yellow);
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.pantry-card-inner {
+  margin: 0 -16px;
+}
+
+.pantry-card-empty {
+  margin: 8px 16px 4px;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--text-cream-muted);
+  line-height: 1.45;
+}
+
+.pantry-card-search-row {
+  margin: 0 16px 10px;
+}
+
+.pantry-card-search-shell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 39px;
+  padding: 0 12px;
+  background: var(--bg-pantry-search);
+  border: 1px solid var(--bg-pantry-search-border);
+  border-radius: 12px;
+}
+
+.pantry-search-input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: var(--text-cream);
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.pantry-search-input::placeholder {
+  color: rgba(245, 239, 228, 0.78);
+  opacity: 1;
+}
+
+.pantry-card-search-icon {
+  flex-shrink: 0;
+  color: var(--text-cream);
+  opacity: 0.85;
+}
+
+.pantry-card-section-label {
+  margin: 0 16px 6px;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-cream-muted);
+}
+
+.pantry-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.pantry-chip-list--recent {
+  margin: 0 16px 6px;
+}
+
+.pantry-chip-list--flat {
+  margin: 0 16px 4px;
+}
+
+.pantry-chip-list--staples {
+  margin: 0 16px 4px;
+  max-height: 92px;
+  overflow-y: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+  mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+}
+
+.pantry-chip-list--staples::-webkit-scrollbar {
+  display: none;
+}
+
+.pantry-chip {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--text-cream);
+  cursor: pointer;
+  background: var(--bg-pantry-chip);
+  border: 1px solid var(--bg-pantry-chip-border);
+  border-radius: 999px;
+  transition: background 0.12s ease;
+}
+
+.pantry-chip:hover {
+  background: rgba(245, 239, 228, 0.22);
+}

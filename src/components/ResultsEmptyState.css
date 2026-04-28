@@ -20,13 +20,13 @@
   padding: 10px 22px;
   font-size: 14px;
   font-weight: 500;
-  color: #1a0f05;
+  color: var(--text-cream);
   background: var(--accent);
   border-radius: 24px;
 }
 
 .results-empty-btn:hover {
-  background: #f0b87a;
+  filter: brightness(1.06);
 }
 
 .results-empty-btn--ghost {

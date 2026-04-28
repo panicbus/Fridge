@@ -1,5 +1,5 @@
 import CachedMealImage from './CachedMealImage';
-import { mealImageSrc, type RecipeMatch } from '../services/mealdb';
+import { recipeCardImageSrc, type RecipeMatch } from '../services/mealdb';
 import './RecipeCard.css';
 
 export interface RecipeCardProps {
@@ -9,7 +9,7 @@ export interface RecipeCardProps {
 }
 
 export default function RecipeCard({ match, index, onClick }: RecipeCardProps) {
-  const { meal, matchedIngredients, missingIngredients, matchScore } = match;
+  const { recipe, matchedIngredients, missingIngredients, matchScore } = match;
   const pct = Math.round(matchScore * 100);
 
   const haveShow = matchedIngredients.slice(0, 4);
@@ -17,7 +17,9 @@ export default function RecipeCard({ match, index, onClick }: RecipeCardProps) {
   const totalBadges =
     matchedIngredients.length + missingIngredients.length;
   const overflow = totalBadges > 7 ? totalBadges - 7 : 0;
-  const thumbSrc = mealImageSrc(meal.strMealThumb, 'medium');
+  const thumbSrc = recipeCardImageSrc(recipe);
+
+  const metaLine = [recipe.area, recipe.category].filter(Boolean).join(' · ');
 
   return (
     <article
@@ -45,15 +47,28 @@ export default function RecipeCard({ match, index, onClick }: RecipeCardProps) {
         ) : (
           <div className="recipe-thumb-placeholder" />
         )}
-        {meal.strCategory && (
-          <span className="recipe-category">{meal.strCategory}</span>
+        {recipe.category && (
+          <span className="recipe-category">{recipe.category}</span>
         )}
-        {meal.strArea && (
-          <span className="recipe-area">{meal.strArea}</span>
-        )}
+        <div className="recipe-diet-badges">
+          {recipe.vegan ? (
+            <span className="diet-badge diet-badge--vegan">🌱 Vegan</span>
+          ) : null}
+          {!recipe.vegan && recipe.vegetarian ? (
+            <span className="diet-badge diet-badge--vegetarian">
+              🥬 Vegetarian
+            </span>
+          ) : null}
+          {recipe.glutenFree ? (
+            <span className="diet-badge diet-badge--gf">🌾 GF</span>
+          ) : null}
+        </div>
       </div>
       <div className="recipe-body">
-        <h3 className="recipe-title">{meal.strMeal}</h3>
+        <h3 className="recipe-title">{recipe.title}</h3>
+        {metaLine ? (
+          <p className="recipe-meta-sub">{metaLine}</p>
+        ) : null}
         <div className="match-bar-wrap">
           <div className="match-bar">
             <div

@@ -1,17 +1,15 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import CachedMealImage from './CachedMealImage';
 import type { RecipeMatch } from '../services/mealdb';
-import {
-  extractIngredients,
-  mealImageSrc,
-  parseSteps,
-} from '../services/mealdb';
+import { recipeHeroImageSrc } from '../services/mealdb';
+import type { RankingMode } from '../services/recipeOrchestrator';
 import './RecipeDetail.css';
 
 export interface RecipeDetailProps {
   match: RecipeMatch;
   userIngredients: string[];
   onBack: () => void;
+  rankingMode?: RankingMode;
 }
 
 function ingredientsMatch(userIng: string, recipeIng: string): boolean {
@@ -23,8 +21,9 @@ export default function RecipeDetail({
   match,
   userIngredients,
   onBack,
+  rankingMode = 'show-all',
 }: RecipeDetailProps) {
-  const { meal } = match;
+  const { recipe } = match;
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(
     () => new Set(),
   );
@@ -36,20 +35,9 @@ export default function RecipeDetail({
     [userIngredients],
   );
 
-  const steps = useMemo(
-    () => parseSteps(meal.strInstructions ?? ''),
-    [meal.strInstructions],
-  );
+  const steps = recipe.instructions;
 
-  const ingredientRows = useMemo(
-    () => extractIngredients(meal),
-    [meal],
-  );
-
-  const tagList = useMemo(() => {
-    if (!meal.strTags) return [];
-    return meal.strTags.split(',').map((t) => t.trim()).filter(Boolean);
-  }, [meal.strTags]);
+  const ingredientRows = recipe.ingredients;
 
   const toggleStep = useCallback((index: number) => {
     setCompletedSteps((prev) => {
@@ -64,7 +52,10 @@ export default function RecipeDetail({
   const totalSteps = steps.length;
   const progressPct =
     totalSteps > 0 ? (doneCount / totalSteps) * 100 : 0;
-  const heroSrc = mealImageSrc(meal.strMealThumb, 'large');
+  const heroSrc = recipeHeroImageSrc(recipe);
+
+  const showVeganAdvisory =
+    rankingMode !== 'show-all' && !recipe.vegan;
 
   return (
     <div className={`recipe-detail ${cookMode ? 'cook-mode' : ''}`}>
@@ -92,17 +83,47 @@ export default function RecipeDetail({
         )}
         <div className="hero-overlay">
           <div className="hero-meta">
-            {meal.strCategory && (
-              <span className="hero-pill">{meal.strCategory}</span>
+            {recipe.category && (
+              <span className="hero-pill">{recipe.category}</span>
             )}
-            {meal.strArea && (
-              <span className="hero-area">{meal.strArea}</span>
+            {recipe.area && (
+              <span className="hero-area">{recipe.area}</span>
             )}
+            {recipe.vegan ? (
+              <span className="hero-diet-badge hero-diet-badge--vegan">
+                🌱 Vegan
+              </span>
+            ) : null}
+            {!recipe.vegan && recipe.vegetarian ? (
+              <span className="hero-diet-badge hero-diet-badge--vegetarian">
+                🥬 Vegetarian
+              </span>
+            ) : null}
+            {recipe.glutenFree ? (
+              <span className="hero-diet-badge hero-diet-badge--neutral">
+                🌾 GF
+              </span>
+            ) : null}
+            {recipe.dairyFree ? (
+              <span className="hero-diet-badge hero-diet-badge--neutral">
+                Dairy-free
+              </span>
+            ) : null}
+            {recipe.readyInMinutes != null && recipe.readyInMinutes > 0 ? (
+              <span className="hero-meta-stat">
+                ⏱ {recipe.readyInMinutes} min
+              </span>
+            ) : null}
+            {recipe.servings != null && recipe.servings > 0 ? (
+              <span className="hero-meta-stat">
+                🍽 Serves {recipe.servings}
+              </span>
+            ) : null}
           </div>
-          <h1 className="hero-title">{meal.strMeal}</h1>
-          {tagList.length > 0 && (
+          <h1 className="hero-title">{recipe.title}</h1>
+          {recipe.tags.length > 0 && (
             <div className="hero-tags">
-              {tagList.map((t) => (
+              {recipe.tags.slice(0, 12).map((t) => (
                 <span key={t} className="hero-tag">
                   {t}
                 </span>
@@ -129,6 +150,11 @@ export default function RecipeDetail({
       <div className="detail-body">
         <aside className="ingredients-col">
           <h2 className="detail-section-title">Ingredients</h2>
+          {showVeganAdvisory ? (
+            <p className="diet-note">
+              Contains animal products — vegan substitutions may be possible
+            </p>
+          ) : null}
           <ul className="ingredients-list">
             {ingredientRows.map((row, i) => {
               const has = normalizedUser.some((u) =>
@@ -156,20 +182,20 @@ export default function RecipeDetail({
               <span className="legend-dot need" /> need to buy
             </span>
           </div>
-          {meal.strYoutube && (
+          {recipe.youtubeUrl && (
             <a
               className="youtube-link"
-              href={meal.strYoutube}
+              href={recipe.youtubeUrl}
               target="_blank"
               rel="noopener noreferrer"
             >
               ▶ Watch on YouTube
             </a>
           )}
-          {meal.strSource && (
+          {recipe.sourceUrl && (
             <a
               className="source-link"
-              href={meal.strSource}
+              href={recipe.sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
             >

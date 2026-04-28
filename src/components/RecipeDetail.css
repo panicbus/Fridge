@@ -20,7 +20,7 @@
 
 .detail-back {
   font-size: 14px;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   padding: 6px 12px;
   margin: -6px -12px;
   border-radius: var(--radius-sm);
@@ -28,8 +28,8 @@
 }
 
 .detail-back:hover {
-  color: var(--accent);
-  background: var(--accent-bg);
+  color: var(--text-primary);
+  background: var(--bg-tag);
   border-color: transparent;
 }
 
@@ -82,8 +82,7 @@
   padding: 40px 32px 24px;
   background: linear-gradient(
     to top,
-    rgba(15, 14, 13, 0.95) 0%,
-    rgba(15, 14, 13, 0.4) 55%,
+    rgba(245, 239, 228, 0.95) 0%,
     transparent 100%
   );
 }
@@ -102,13 +101,51 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--accent);
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(255, 251, 243, 0.92);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius-sm);
 }
 
 .hero-area {
   font-size: 13px;
   color: var(--text-secondary);
+}
+
+.hero-diet-badge {
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  backdrop-filter: blur(4px);
+}
+
+.hero-diet-badge--vegan {
+  background: rgba(74, 110, 82, 0.92);
+  color: var(--text-cream);
+}
+
+.hero-diet-badge--vegetarian {
+  background: rgba(74, 110, 82, 0.78);
+  color: var(--text-cream);
+}
+
+.hero-diet-badge--neutral {
+  background: rgba(255, 251, 243, 0.85);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-soft);
+}
+
+.hero-meta-stat {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.diet-note {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  line-height: 1.45;
 }
 
 .hero-title {
@@ -280,7 +317,7 @@
 
 .youtube-link:hover,
 .source-link:hover {
-  color: #f0b87a;
+  color: var(--accent-dim);
 }
 
 .source-link {

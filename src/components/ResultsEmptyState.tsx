@@ -3,7 +3,7 @@ import './ResultsEmptyState.css';
 
 export interface ResultsEmptyStateProps {
   onTryAgain: () => void;
-  variant?: 'default' | 'diet-filter';
+  variant?: 'default' | 'diet-filter' | 'broaden';
   onClearDietFilter?: () => void;
 }
 
@@ -13,18 +13,23 @@ export default function ResultsEmptyState({
   onClearDietFilter,
 }: ResultsEmptyStateProps) {
   const isDiet = variant === 'diet-filter';
+  const isBroaden = variant === 'broaden';
 
   return (
     <div className="results-empty">
       <p>
         {isDiet
           ? 'No recipes match the diet filter you chose.'
-          : 'No recipes found for those ingredients.'}
+          : isBroaden
+            ? 'No recipes found.'
+            : 'No recipes found for those ingredients.'}
       </p>
       <p className="results-empty-hint">
         {isDiet
           ? 'Clear the diet filter or try a different one.'
-          : 'Try different items or fewer filters.'}
+          : isBroaden
+            ? 'Try adding more ingredients, or switch to “Show all” to broaden the search.'
+            : 'Try different items or fewer filters.'}
       </p>
       {isDiet && onClearDietFilter ? (
         <button

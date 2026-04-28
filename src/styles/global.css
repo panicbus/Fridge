@@ -7,26 +7,41 @@
 }
 
 :root {
-  --bg: #0f0e0d;
-  --bg-card: #1a1917;
-  --bg-input: #242220;
-  --bg-tag: #2a2826;
-  --text-primary: #f0ebe3;
-  --text-secondary: #8a847a;
-  --text-muted: #5a5650;
-  --accent: #e8a46a;
-  --accent-dim: #b87840;
-  --accent-bg: #2a1f12;
-  --green: #6fba8a;
-  --green-bg: #162210;
-  --red: #e07070;
-  --border: rgba(255, 255, 255, 0.07);
-  --border-hover: rgba(255, 255, 255, 0.14);
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 18px;
-  --font-display: 'Fraunces', serif;
-  --font-body: 'DM Sans', sans-serif;
+  --bg: #f5efe4;
+  --bg-card: #fffbf3;
+  --bg-input: #fffbf3;
+  --bg-tag: #f0e4cc;
+  --bg-pantry: #4a6e52;
+  --bg-pantry-chip: rgba(245, 239, 228, 0.15);
+  --bg-pantry-chip-border: rgba(245, 239, 228, 0.25);
+  --bg-pantry-search: rgba(245, 239, 228, 0.18);
+  --bg-pantry-search-border: rgba(245, 239, 228, 0.28);
+  --text-primary: #1a1815;
+  --text-secondary: #5a5040;
+  --text-muted: #8a7e6a;
+  --text-cream: #f5efe4;
+  --text-cream-muted: #c8d6c0;
+  --accent: #c1432a;
+  --accent-yellow: #f5c84c;
+  --tag-text: #5a3a1f;
+  --tag-border: #d9c7a3;
+  --tag-x: #a08560;
+  --border: #d9cfb8;
+  --border-soft: #ebe2cf;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 16px;
+  --font-display: Georgia, serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
+
+  /* Derived — used across recipe/results/detail UI */
+  --accent-dim: #9a3424;
+  --accent-bg: rgba(193, 67, 42, 0.08);
+  --green: #4a6e52;
+  --green-bg: rgba(74, 110, 82, 0.14);
+  --red: #c1432a;
+  --border-hover: #bfae94;
 }
 
 html,
@@ -60,17 +75,6 @@ body {
 *::-webkit-scrollbar-thumb {
   background: var(--border-hover);
   border-radius: 3px;
-}
-
-.titlebar-drag {
-  -webkit-app-region: drag;
-  height: 28px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  pointer-events: none;
 }
 
 button {
@@ -113,15 +117,5 @@ input {
   }
   50% {
     opacity: 0.4;
-  }
-}
-
-@keyframes artFloat {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-18px) rotate(8deg);
   }
 }

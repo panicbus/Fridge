@@ -16,7 +16,7 @@ export default function ResultsGrid({
     <div className="results-grid">
       {recipes.map((m, i) => (
         <RecipeCard
-          key={m.meal.idMeal}
+          key={m.recipe.id}
           match={m}
           index={i}
           onClick={() => onSelectRecipe(m)}

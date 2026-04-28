@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 export type CachedMealImageProps = Omit<
   React.ImgHTMLAttributes<HTMLImageElement>,
@@ -8,34 +8,16 @@ export type CachedMealImageProps = Omit<
 };
 
 /**
- * In Electron, resolves TheMealDB image URLs through the main-process disk cache
- * (see electron/imageCache.ts). In the browser (e.g. vite preview), uses src directly.
+ * Recipe thumbnails load from HTTPS in the renderer. A previous disk-cache path
+ * returned file:// URLs from the main process; Chromium blocks those from
+ * http://localhost (dev) and from many file:// app origins, which showed broken
+ * images everywhere.
  */
 export default function CachedMealImage({
   src,
   ...imgProps
 }: CachedMealImageProps) {
-  const [resolved, setResolved] = useState<string | null>(null);
-
-  useEffect(() => {
-    const api = window.mealImageCache;
-    if (!api) {
-      setResolved(src);
-      return;
-    }
-    setResolved(null);
-    let cancelled = false;
-    void api.resolve(src).then((url) => {
-      if (!cancelled) setResolved(url);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [src]);
-
-  if (!resolved) {
-    return null;
-  }
-
-  return <img src={resolved} {...imgProps} />;
+  const url = src?.trim();
+  if (!url) return null;
+  return <img src={url} {...imgProps} />;
 }

@@ -17,7 +17,7 @@ export default function ResultsHeader({
   return (
     <header className="results-header">
       <div className="results-header-top">
-        <button type="button" className="results-back" onClick={onNewSearch}>
+        <button type="button" className="back-btn-top" onClick={onNewSearch}>
           ← New search
         </button>
         <div className="results-info">

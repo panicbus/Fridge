@@ -14,11 +14,17 @@ function cacheRoot(): string {
 function isCacheableMealImageUrl(url: string): boolean {
   try {
     const u = new URL(url);
-    return (
-      u.protocol === 'https:' &&
-      u.hostname === 'www.themealdb.com' &&
-      u.pathname.startsWith('/images/')
-    );
+    if (u.protocol !== 'https:') return false;
+    if (u.hostname === 'www.themealdb.com' && u.pathname.startsWith('/images/'))
+      return true;
+    if (
+      u.hostname === 'img.spoonacular.com' ||
+      u.hostname === 'spoonacular.com' ||
+      u.hostname === 'www.spoonacular.com' ||
+      u.hostname.endsWith('.spoonacular.com')
+    )
+      return true;
+    return false;
   } catch {
     return false;
   }
@@ -32,7 +38,12 @@ function cacheFilePathForUrl(url: string): string {
 }
 
 async function downloadToFile(remoteUrl: string, dest: string): Promise<void> {
-  const res = await fetch(remoteUrl);
+  const res = await fetch(remoteUrl, {
+    headers: {
+      Accept: 'image/*,*/*;q=0.8',
+      'User-Agent': 'Fridge/1.0 (Electron desktop recipe app)',
+    },
+  });
   if (!res.ok) {
     throw new Error(`HTTP ${res.status}`);
   }

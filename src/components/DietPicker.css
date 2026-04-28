@@ -1,0 +1,43 @@
+.diet-picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.diet-picker-label {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-right: 4px;
+}
+
+.diet-picker-pill {
+  padding: 5px 13px;
+  font-size: 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.diet-picker-pill:hover {
+  border-color: var(--text-muted);
+}
+
+.diet-picker-pill--active {
+  background: var(--bg-pantry);
+  border: none;
+  color: var(--text-cream);
+  font-weight: 500;
+}
+
+.diet-picker-pill--active:hover {
+  border: none;
+}

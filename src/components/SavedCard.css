@@ -1,0 +1,49 @@
+.saved-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+}
+
+.saved-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.saved-card-kicker {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.saved-card-view-all {
+  padding: 0;
+  margin: 0;
+  font-size: 11px;
+  color: var(--accent);
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.saved-card-body {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.saved-card-count {
+  font-family: var(--font-display);
+  font-size: 36px;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.saved-card-word {
+  font-size: 12px;
+  color: var(--text-muted);
+}
