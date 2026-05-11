@@ -3,28 +3,13 @@ import RecipeCard from './RecipeCard';
 import { useStore } from '../hooks/useStore';
 import { savedRecipesStore } from '../services/savedRecipes';
 import type { RecipeMatch } from '../types';
+import { formatRelativeTime } from '../utils/relativeTime';
 import './ResultsView.css';
 import './SavedView.css';
 
 export interface SavedViewProps {
   onBack: () => void;
   onSelectRecipe: (recipeId: string) => void;
-}
-
-function formatSavedRelative(savedAt: number): string {
-  const diffMs = Date.now() - savedAt;
-  if (diffMs < 60_000) return 'just now';
-  const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
-  const minutes = Math.round(diffMs / 60_000);
-  if (minutes < 60) return rtf.format(-minutes, 'minute');
-  const hours = Math.round(diffMs / 3_600_000);
-  if (hours < 24) return rtf.format(-hours, 'hour');
-  const days = Math.round(diffMs / 86_400_000);
-  if (days < 30) return rtf.format(-days, 'day');
-  const months = Math.round(diffMs / (30 * 86_400_000));
-  if (months < 12) return rtf.format(-months, 'month');
-  const years = Math.round(diffMs / (365 * 86_400_000));
-  return rtf.format(-years, 'year');
 }
 
 function toSavedCardMatch(recipe: RecipeMatch['recipe']): RecipeMatch {
@@ -96,7 +81,7 @@ export default function SavedView({ onBack, onSelectRecipe }: SavedViewProps) {
                 key={saved.id}
                 match={toSavedCardMatch(saved.recipe)}
                 index={i}
-                savedNote={`Saved ${formatSavedRelative(saved.savedAt)}`}
+                savedNote={`Saved ${formatRelativeTime(saved.savedAt)}`}
                 onClick={() => onSelectRecipe(saved.recipe.id)}
               />
             ))}

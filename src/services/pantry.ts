@@ -1,3 +1,8 @@
+import {
+  getIngredientUsageCount,
+  migrateIngredientUsageRename,
+} from './ingredientUsage';
+
 const STORAGE_KEY = 'fridge.pantry';
 
 export interface PantryItem {
@@ -75,6 +80,29 @@ export function addToPantry(name: string): void {
 export function removeFromPantry(name: string): void {
   const n = name.trim().toLowerCase();
   write(readRaw().filter((x) => x.name !== n));
+}
+
+/**
+ * Rename a pantry item (case-insensitive keys). Preserves lastUsed and addedAt.
+ * Returns false if `newName` collides with an existing item.
+ */
+export function renamePantryItem(oldName: string, newName: string): boolean {
+  const o = oldName.trim().toLowerCase();
+  const n = newName.trim().toLowerCase();
+  if (!o || !n || o === n) return false;
+  const items = dedupeByName(readRaw());
+  if (items.some((x) => x.name === n)) return false;
+  const idx = items.findIndex((x) => x.name === o);
+  if (idx < 0) return false;
+  items[idx] = { ...items[idx], name: n };
+  write(dedupeByName(items));
+  migrateIngredientUsageRename(o, n);
+  return true;
+}
+
+/** Usage tally when user adds ingredient tags (`ingredientUsage`). */
+export function getPantryUsageCount(name: string): number {
+  return getIngredientUsageCount(name.trim().toLowerCase());
 }
 
 export function bumpUsage(names: string[]): void {

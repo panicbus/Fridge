@@ -8,6 +8,8 @@ export interface RecipeDetailScreenProps {
   match: RecipeMatch;
   userIngredients: string[];
   onBack: () => void;
+  onHome: () => void;
+  backLabel: string;
   rankingMode?: RankingMode;
 }
 
@@ -15,6 +17,8 @@ export default function RecipeDetailScreen({
   match,
   userIngredients,
   onBack,
+  onHome,
+  backLabel,
   rankingMode,
 }: RecipeDetailScreenProps) {
   return (
@@ -23,6 +27,8 @@ export default function RecipeDetailScreen({
         match={match}
         userIngredients={userIngredients}
         onBack={onBack}
+        onHome={onHome}
+        backLabel={backLabel}
         rankingMode={rankingMode}
       />
     </div>

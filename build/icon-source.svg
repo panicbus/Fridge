@@ -1,10 +1,103 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-  <rect width="1024" height="1024" fill="#f5efe4"/>
-  <g transform="translate(308, 248) scale(8.5)">
-    <rect x="3" y="3" width="42" height="52" rx="6" stroke="#1a1815" stroke-width="2.4" fill="none"/>
-    <line x1="3" y1="22" x2="45" y2="22" stroke="#1a1815" stroke-width="2.4"/>
-    <line x1="38.5" y1="11" x2="38.5" y2="16" stroke="#1a1815" stroke-width="2.4" stroke-linecap="round" fill="none"/>
-    <line x1="38.5" y1="32" x2="38.5" y2="40" stroke="#1a1815" stroke-width="2.4" stroke-linecap="round" fill="none"/>
-    <circle cx="14" cy="36" r="3.5" fill="#c1432a"/>
+  <defs>
+    <!-- ~22% corner radius matches macOS Big Sur+ icon mask -->
+    <clipPath id="squircle">
+      <rect width="1024" height="1024" rx="226" ry="226"/>
+    </clipPath>
+    <linearGradient id="bg-depth" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#35302a"/>
+      <stop offset="55%" stop-color="#1c1916"/>
+      <stop offset="100%" stop-color="#0d0c0b"/>
+    </linearGradient>
+    <radialGradient id="bg-glow" cx="35%" cy="28%" r="65%">
+      <stop offset="0%" stop-color="#4a433c" stop-opacity="0.55"/>
+      <stop offset="45%" stop-color="#1c1916" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="rim" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!--
+    macOS Dock tiles are a fixed size; Electron scales our PNG to fill that tile.
+    Shrinking the raster pixel count does not shrink the tile — only transparent margins do.
+    ~79% keeps opaque artwork like typical native icons (~80% safe zone on a 1024 canvas).
+  -->
+  <g transform="translate(512 512) scale(0.79) translate(-512 -512)">
+  <g clip-path="url(#squircle)">
+    <rect width="1024" height="1024" fill="url(#bg-depth)"/>
+    <rect width="1024" height="1024" fill="url(#bg-glow)"/>
+    <rect width="1024" height="420" fill="url(#rim)"/>
+
+    <!-- Spend-style bezel: light outer ring + faint inner edge -->
+    <rect
+      x="4"
+      y="4"
+      width="1016"
+      height="1016"
+      rx="224"
+      ry="224"
+      fill="none"
+      stroke="#e8e4dc"
+      stroke-opacity="0.38"
+      stroke-width="2.25"
+    />
+    <rect
+      x="6.5"
+      y="6.5"
+      width="1011"
+      height="1011"
+      rx="222"
+      ry="222"
+      fill="none"
+      stroke="#000000"
+      stroke-opacity="0.28"
+      stroke-width="1.25"
+    />
+
+    <!-- Fridge glyph (badge inset controlled by outer Dock parity transform above) -->
+    <g
+      transform="translate(512 508) scale(10.12) translate(-24 -29)"
+      fill="none"
+    >
+      <rect
+        x="3"
+        y="3"
+        width="42"
+        height="52"
+        rx="6"
+        stroke="#f4eee4"
+        stroke-width="2.66"
+      />
+      <line
+        x1="3"
+        y1="22"
+        x2="45"
+        y2="22"
+        stroke="#f4eee4"
+        stroke-width="2.66"
+      />
+      <line
+        x1="38.5"
+        y1="11"
+        x2="38.5"
+        y2="16"
+        stroke="#f4eee4"
+        stroke-width="2.66"
+        stroke-linecap="round"
+      />
+      <line
+        x1="38.5"
+        y1="32"
+        x2="38.5"
+        y2="40"
+        stroke="#f4eee4"
+        stroke-width="2.66"
+        stroke-linecap="round"
+      />
+      <circle cx="14" cy="36" r="3.5" fill="#c1432a"/>
+    </g>
+  </g>
   </g>
 </svg>

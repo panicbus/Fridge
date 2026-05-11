@@ -1,0 +1,18 @@
+# Packaging + macOS bundle icon (Dock / Finder). Run: npm run dist:mac
+appId: com.fridge.app
+productName: Fridge
+directories:
+  output: release
+files:
+  - dist/**/*
+  - dist-electron/**/*
+  - package.json
+extraResources:
+  - from: build
+    to: build
+mac:
+  icon: build/icon.icns
+  category: public.app-category.food-and-drink
+  target:
+    - dmg
+    - zip

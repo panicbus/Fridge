@@ -11,6 +11,8 @@ import './ResultsView.css';
 export interface ResultsViewProps {
   recipes: RecipeMatch[];
   totalRecipeCount: number;
+  /** True while a search request is in flight (e.g. replay from history) */
+  loading?: boolean;
   ingredients: string[];
   plateFilter: DietPreference | null;
   onPlateFilterChange: (v: DietPreference | null) => void;
@@ -25,6 +27,7 @@ export interface ResultsViewProps {
 export default function ResultsView({
   recipes,
   totalRecipeCount,
+  loading = false,
   ingredients,
   plateFilter,
   onPlateFilterChange,
@@ -38,6 +41,7 @@ export default function ResultsView({
   const dietFilteredEmpty =
     recipes.length === 0 && totalRecipeCount > 0 && plateFilter !== null;
   const noMatchesAtAll = totalRecipeCount === 0;
+  const fetchingEmpty = loading && totalRecipeCount === 0;
 
   const showGrouped =
     (rankingMode === 'vegan-first' || rankingMode === 'vegetarian-friendly') &&
@@ -79,7 +83,11 @@ export default function ResultsView({
         />
       </ResultsHeader>
       <div className="results-scroll">
-        {noMatchesAtAll ? (
+        {fetchingEmpty ? (
+          <div className="results-fetching" role="status" aria-live="polite">
+            Searching recipes…
+          </div>
+        ) : noMatchesAtAll ? (
           <ResultsEmptyState
             variant={
               rankingMode === 'show-all' ? 'default' : 'broaden'

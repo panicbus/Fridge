@@ -18,6 +18,39 @@
   border-bottom: 1px solid var(--border);
 }
 
+.detail-header-nav {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-shrink: 0;
+}
+
+/* Matches .app-header-btn (Saved / History); slightly larger tap target */
+.detail-home-cta {
+  flex-shrink: 0;
+  padding: 8px 15px;
+  font-size: 13px;
+  font-weight: inherit;
+  color: var(--text-primary);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.detail-home-cta:hover {
+  background: var(--bg-card);
+  border-color: var(--text-muted);
+}
+
+.detail-home-cta:focus-visible {
+  outline: 2px solid var(--text-muted);
+  outline-offset: 2px;
+}
+
 .detail-header-spacer {
   flex: 1;
   min-width: 8px;

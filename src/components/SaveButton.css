@@ -58,7 +58,7 @@
 
 .save-button--variant-overlay {
   border-radius: 999px;
-  padding: 8px;
+  padding: 10px;
   background: rgba(255, 251, 243, 0.92);
   backdrop-filter: blur(4px);
   border: 1px solid var(--border);
@@ -86,13 +86,13 @@
 }
 
 .save-button--size-sm .save-button-bookmark {
-  width: 16px;
-  height: 20px;
+  width: 22px;
+  height: 28px;
 }
 
 .save-button--size-md .save-button-bookmark {
-  width: 22px;
-  height: 28px;
+  width: 28px;
+  height: 35px;
 }
 
 .save-button-bookmark {

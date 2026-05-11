@@ -12,14 +12,16 @@ import {
   rankingModeToPreferences,
   type RankingMode,
 } from '../services/recipeOrchestrator';
+import { getRecipeViewById, recordRecipeView } from '../services/recipeViewHistory';
+import { recordSearch } from '../services/searchHistory';
 import { getSavedRecipeById } from '../services/savedRecipes';
 import { getSpoonacularErrorBanner } from '../services/spoonacular';
 
 const RANKING_STORAGE_KEY = 'fridge.dietPreference';
 
-type View = 'home' | 'results' | 'detail' | 'saved';
+type View = 'home' | 'results' | 'detail' | 'saved' | 'history' | 'pantry-manage';
 
-type DetailReturnView = 'results' | 'saved';
+export type DetailReturnView = 'results' | 'saved' | 'history';
 
 function readRankingMode(): RankingMode {
   try {
@@ -65,8 +67,17 @@ export interface FridgeAppState {
   handleSelectRecipe: (match: RecipeMatch) => void;
   handleSelectSavedRecipe: (recipeId: string) => void;
   handleOpenSaved: () => void;
+  handleOpenHistory: () => void;
+  handleOpenPantryManage: () => void;
+  handleReplaySearch: (ingredients: string[], pref: RankingMode) => void;
+  handleSelectHistoryRecipe: (recipeId: string) => void;
   handleBack: () => void;
+  /** Leave recipe/detail flows and return to main ingredient screen */
+  handleGoHome: () => void;
+  /** Where detail Back navigates (results / saved / history) */
+  detailReturnView: DetailReturnView;
   pantryRefreshKey: number;
+  bumpPantryRevision: () => void;
 }
 
 export function useFridgeAppState(): FridgeAppState {
@@ -108,26 +119,61 @@ export function useFridgeAppState(): FridgeAppState {
     [recipes, plateFilter],
   );
 
-  const handleAddIngredient = useCallback((raw: string) => {
-    const trimmed = raw.trim();
-    if (!trimmed) return;
-    const lower = trimmed.toLowerCase();
+  const executeSearch = useCallback(
+    async (ings: string[], mode: RankingMode) => {
+      if (ings.length === 0) return;
+      setError('');
+      setLoading(true);
+      setSpoonacularNotice(null);
+      try {
+        bumpUsage(ings.map((x) => x.trim().toLowerCase()));
+        bumpPantryRevision();
+        const prefs = rankingModeToPreferences(mode);
+        const list = await findRecipes(ings, prefs);
+        recordSearch({
+          ingredients: ings,
+          dietPreference: mode,
+          resultCount: list.length,
+        });
+        setRecipes(list);
+        setSpoonacularNotice(getSpoonacularErrorBanner());
+        setView('results');
+      } catch {
+        setError(
+          'Something went wrong while fetching recipes. Check your connection and try again.',
+        );
+        setRecipes([]);
+        setView('home');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [bumpPantryRevision],
+  );
 
-    let didAppend = false;
-    setIngredients((prev) => {
-      if (prev.some((p) => p.toLowerCase() === lower)) return prev;
-      didAppend = true;
-      return [...prev, trimmed];
-    });
+  const handleAddIngredient = useCallback(
+    (raw: string) => {
+      const trimmed = raw.trim();
+      if (!trimmed) return;
+      const lower = trimmed.toLowerCase();
 
-    if (!didAppend) return;
+      let didAppend = false;
+      setIngredients((prev) => {
+        if (prev.some((p) => p.toLowerCase() === lower)) return prev;
+        didAppend = true;
+        return [...prev, trimmed];
+      });
 
-    rememberIngredientName(trimmed);
-    addToPantry(lower);
-    bumpUsage([lower]);
-    recordIngredientUsage(lower);
-    bumpPantryRevision();
-  }, [bumpPantryRevision]);
+      if (!didAppend) return;
+
+      rememberIngredientName(trimmed);
+      addToPantry(lower);
+      bumpUsage([lower]);
+      recordIngredientUsage(lower);
+      bumpPantryRevision();
+    },
+    [bumpPantryRevision],
+  );
 
   const handleRemoveIngredient = useCallback((raw: string) => {
     const lower = raw.trim().toLowerCase();
@@ -137,31 +183,11 @@ export function useFridgeAppState(): FridgeAppState {
   }, []);
 
   const handleSearch = useCallback(async () => {
-    const ings = ingredients;
-    if (ings.length === 0) return;
-    setError('');
-    setLoading(true);
-    setSpoonacularNotice(null);
-    try {
-      bumpUsage(ings.map((x) => x.trim().toLowerCase()));
-      bumpPantryRevision();
-      const prefs = rankingModeToPreferences(rankingMode);
-      const list = await findRecipes(ings, prefs);
-      setRecipes(list);
-      setSpoonacularNotice(getSpoonacularErrorBanner());
-      setView('results');
-    } catch {
-      setError(
-        'Something went wrong while fetching recipes. Check your connection and try again.',
-      );
-      setRecipes([]);
-      setView('home');
-    } finally {
-      setLoading(false);
-    }
-  }, [ingredients, rankingMode, bumpPantryRevision]);
+    await executeSearch(ingredients, rankingMode);
+  }, [executeSearch, ingredients, rankingMode]);
 
   const handleSelectRecipe = useCallback((match: RecipeMatch) => {
+    recordRecipeView(match.recipe);
     setDetailReturnView('results');
     setSelected(match);
     setView('detail');
@@ -170,6 +196,7 @@ export function useFridgeAppState(): FridgeAppState {
   const handleSelectSavedRecipe = useCallback((recipeId: string) => {
     const row = getSavedRecipeById(recipeId);
     if (!row) return;
+    recordRecipeView(row.recipe);
     setDetailReturnView('saved');
     setSelected({
       recipe: row.recipe,
@@ -184,14 +211,59 @@ export function useFridgeAppState(): FridgeAppState {
     setView('saved');
   }, []);
 
+  const handleOpenHistory = useCallback(() => {
+    setView('history');
+  }, []);
+
+  const handleOpenPantryManage = useCallback(() => {
+    setView('pantry-manage');
+  }, []);
+
+  const handleReplaySearch = useCallback(
+    (ings: string[], pref: RankingMode) => {
+      setIngredients(ings);
+      setRankingMode(pref);
+      setRecipes([]);
+      setView('results');
+      queueMicrotask(() => {
+        void executeSearch(ings, pref);
+      });
+    },
+    [executeSearch, setRankingMode],
+  );
+
+  const handleSelectHistoryRecipe = useCallback((recipeId: string) => {
+    const entry = getRecipeViewById(recipeId);
+    if (!entry) return;
+    recordRecipeView(entry.recipe);
+    setSelected({
+      recipe: entry.recipe,
+      matchedIngredients: [],
+      missingIngredients: [],
+      matchScore: 1,
+    });
+    setDetailReturnView('history');
+    setView('detail');
+  }, []);
+
+  const handleGoHome = useCallback(() => {
+    setSelected(null);
+    setRecipes([]);
+    setPlateFilter(null);
+    setView('home');
+  }, []);
+
   const handleBack = useCallback(() => {
     if (view === 'detail') {
       setSelected(null);
       setView(detailReturnView);
-    } else if (view === 'saved') {
-      setView('home');
-    } else if (view === 'results') {
-      setRecipes([]);
+    } else if (
+      view === 'results' ||
+      view === 'saved' ||
+      view === 'history' ||
+      view === 'pantry-manage'
+    ) {
+      if (view === 'results') setRecipes([]);
       setView('home');
     }
   }, [view, detailReturnView]);
@@ -216,7 +288,14 @@ export function useFridgeAppState(): FridgeAppState {
     handleSelectRecipe,
     handleSelectSavedRecipe,
     handleOpenSaved,
+    handleOpenHistory,
+    handleOpenPantryManage,
+    handleReplaySearch,
+    handleSelectHistoryRecipe,
     handleBack,
+    handleGoHome,
+    detailReturnView,
     pantryRefreshKey,
+    bumpPantryRevision,
   };
 }

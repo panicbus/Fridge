@@ -10,6 +10,8 @@ export interface RecipeDetailProps {
   match: RecipeMatch;
   userIngredients: string[];
   onBack: () => void;
+  onHome: () => void;
+  backLabel: string;
   rankingMode?: RankingMode;
 }
 
@@ -22,6 +24,8 @@ export default function RecipeDetail({
   match,
   userIngredients,
   onBack,
+  onHome,
+  backLabel,
   rankingMode = 'show-all',
 }: RecipeDetailProps) {
   const { recipe } = match;
@@ -61,9 +65,14 @@ export default function RecipeDetail({
   return (
     <div className={`recipe-detail ${cookMode ? 'cook-mode' : ''}`}>
       <header className="detail-header">
-        <button type="button" className="detail-back" onClick={onBack}>
-          ← Back
-        </button>
+        <div className="detail-header-nav">
+          <button type="button" className="detail-home-cta" onClick={onHome}>
+            Home
+          </button>
+          <button type="button" className="detail-back" onClick={onBack}>
+            {backLabel}
+          </button>
+        </div>
         <div className="detail-header-spacer" aria-hidden />
         <SaveButton recipe={recipe} size="md" variant="inline" />
         <button

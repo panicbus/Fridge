@@ -35,3 +35,24 @@ export interface SavedRecipe {
   savedAt: number;
   updatedAt: number;
 }
+
+/** Diet ranking mode at search time (matches RankingMode). */
+export type SearchHistoryDietPreference =
+  | 'vegan-first'
+  | 'vegetarian-friendly'
+  | 'show-all';
+
+export interface SearchHistoryEntry {
+  id: string;
+  timestamp: number;
+  ingredients: string[];
+  dietPreference: SearchHistoryDietPreference;
+  resultCount: number;
+}
+
+export interface RecipeViewEntry {
+  id: string;
+  recipe: UnifiedRecipe;
+  viewedAt: number;
+  updatedAt: number;
+}

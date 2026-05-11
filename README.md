@@ -33,8 +33,9 @@ Spoonacular provides authoritative diet flags. For TheMealDB recipes, vegan/vege
 
 ```bash
 npm install
-npm run dev      # Vite + Electron
+npm run dev      # Vite + Electron (Dock shows Fridge icon via app.dock.setIcon)
 npm run build    # Typecheck, bundle renderer, compile Electron main
+npm run dist:mac # Packaged macOS app + dmg/zip (uses build/icon.icns)
 ```
 
 ## Project layout
@@ -50,6 +51,27 @@ Tap the bookmark on any recipe card or detail view to save it. Saved recipes app
 Saved recipes are snapshotted at save time and work fully offline — they survive API outages, quota limits, and recipe changes at the source.
 
 Storage: `localStorage` under `fridge.savedRecipes`. Future versions will sync to a cloud backend without requiring data migration on your end — the storage adapter is designed for it.
+
+## History
+
+Tap **History** in the top bar to see:
+
+- **Recent searches** — your last 100 searches. Tap any entry to replay it with the same ingredients and diet preference.
+- **Recently viewed recipes** — the last 200 recipes you opened. Tap any to revisit. Save them with the bookmark icon directly from the history list.
+- **Vegan first** — header control **On** (default) limits lists to searches run in vegan-first mode and to viewed recipes flagged vegan; **Off** shows full history for both sections.
+
+History is stored locally and capped to avoid unbounded growth. Older entries are evicted automatically.
+
+## Pantry Manage
+
+Tap **Manage →** on the pantry card (or open the pantry from anywhere this view becomes available) to:
+
+- Filter by ingredient name
+- Sort by recently used, A → Z, most used, or oldest first
+- Click any ingredient name to rename it (e.g. fix typos)
+- Delete ingredients you don't want tracked
+
+Renamed ingredients preserve their usage history. Deleted ingredients are removed immediately — no confirmation, but they can be added back any time by typing them into a search.
 
 ## Icon assets
 

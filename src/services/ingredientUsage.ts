@@ -34,6 +34,29 @@ export function recordIngredientUsage(normalizedName: string): void {
   save(Object.fromEntries(top));
 }
 
+export function getIngredientUsageCount(normalizedName: string): number {
+  const k = normalizedName.trim().toLowerCase();
+  if (!k) return 0;
+  return load()[k] ?? 0;
+}
+
+/** Merge usage counts when renaming an ingredient key (both lowercase). */
+export function migrateIngredientUsageRename(
+  oldName: string,
+  newName: string,
+): void {
+  const o = oldName.trim().toLowerCase();
+  const n = newName.trim().toLowerCase();
+  if (!o || !n || o === n) return;
+  const counts = load();
+  const prev = counts[o];
+  if (prev === undefined) return;
+  delete counts[o];
+  counts[n] = (counts[n] ?? 0) + prev;
+  const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  save(Object.fromEntries(sorted.slice(0, MAX_TRACKED)));
+}
+
 /**
  * Most-used ingredients first (from local history), then fallbacks, excluding already-tagged.
  */

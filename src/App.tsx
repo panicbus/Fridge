@@ -5,6 +5,8 @@ import DietPicker from './components/DietPicker';
 import SavedCard from './components/SavedCard';
 import PantryCard from './components/PantryCard';
 import SavedView from './components/SavedView';
+import HistoryView from './components/HistoryView';
+import PantryManageView from './components/PantryManageView';
 import ResultsView from './components/ResultsView';
 import RecipeDetailScreen from './components/RecipeDetailScreen';
 import { useFridgeAppState } from './hooks/useFridgeAppState';
@@ -31,8 +33,15 @@ export default function App() {
     handleSelectRecipe,
     handleSelectSavedRecipe,
     handleOpenSaved,
+    handleOpenHistory,
+    handleOpenPantryManage,
+    handleReplaySearch,
+    handleSelectHistoryRecipe,
     handleBack,
+    handleGoHome,
+    detailReturnView,
     pantryRefreshKey,
+    bumpPantryRevision,
   } = useFridgeAppState();
 
   return (
@@ -41,9 +50,7 @@ export default function App() {
         <div className="home-layout">
           <Header
             onSaved={handleOpenSaved}
-            onHistory={() => {
-              console.log('history — coming soon');
-            }}
+            onHistory={handleOpenHistory}
             onSettings={() => {
               console.log('settings — coming soon');
             }}
@@ -75,7 +82,7 @@ export default function App() {
             <PantryCard
               activeIngredients={ingredients}
               onAddIngredient={handleAddIngredient}
-              onManage={() => {}}
+              onManage={handleOpenPantryManage}
               pantryRevision={pantryRefreshKey}
             />
           </section>
@@ -86,10 +93,27 @@ export default function App() {
         <SavedView onBack={handleBack} onSelectRecipe={handleSelectSavedRecipe} />
       )}
 
+      {view === 'history' && (
+        <HistoryView
+          onBack={handleBack}
+          onReplaySearch={handleReplaySearch}
+          onSelectRecipe={handleSelectHistoryRecipe}
+        />
+      )}
+
+      {view === 'pantry-manage' && (
+        <PantryManageView
+          onBack={handleBack}
+          pantryRevision={pantryRefreshKey}
+          onPantryChanged={bumpPantryRevision}
+        />
+      )}
+
       {view === 'results' && (
         <ResultsView
           recipes={filteredRecipes}
           totalRecipeCount={recipes.length}
+          loading={loading}
           ingredients={ingredients}
           plateFilter={plateFilter}
           onPlateFilterChange={setPlateFilter}
@@ -107,6 +131,14 @@ export default function App() {
           match={selected}
           userIngredients={ingredients}
           onBack={handleBack}
+          onHome={handleGoHome}
+          backLabel={
+            detailReturnView === 'saved'
+              ? '← Back to saved'
+              : detailReturnView === 'history'
+                ? '← Back to history'
+                : '← Back to results'
+          }
           rankingMode={rankingMode}
         />
       )}
