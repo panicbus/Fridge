@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import CachedMealImage from './CachedMealImage';
-import type { RecipeMatch } from '../services/mealdb';
+import SaveButton from './SaveButton';
+import type { RecipeMatch } from '../types';
 import { recipeHeroImageSrc } from '../services/mealdb';
 import type { RankingMode } from '../services/recipeOrchestrator';
 import './RecipeDetail.css';
@@ -63,6 +64,8 @@ export default function RecipeDetail({
         <button type="button" className="detail-back" onClick={onBack}>
           ← Back
         </button>
+        <div className="detail-header-spacer" aria-hidden />
+        <SaveButton recipe={recipe} size="md" variant="inline" />
         <button
           type="button"
           className={`cook-mode-btn ${cookMode ? 'active' : ''}`}
@@ -84,7 +87,7 @@ export default function RecipeDetail({
         <div className="hero-overlay">
           <div className="hero-meta">
             {recipe.category && (
-              <span className="hero-pill">{recipe.category}</span>
+              <span className="hero-category">{recipe.category}</span>
             )}
             {recipe.area && (
               <span className="hero-area">{recipe.area}</span>

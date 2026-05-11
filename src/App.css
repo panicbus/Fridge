@@ -4,7 +4,7 @@
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
-  padding: 36px 36px 32px;
+  padding: 44px 56px 52px;
   box-sizing: border-box;
 }
 
@@ -16,35 +16,33 @@
   overflow: hidden;
 }
 
-.home-grid {
-  flex: 1;
-  min-height: 0;
+.home-top {
+  flex-shrink: 0;
+  padding-bottom: 56px;
+  margin-bottom: 12px;
+}
+
+.home-bottom {
   display: grid;
-  grid-template-columns: 1.7fr 1fr;
-  gap: 32px;
-  align-content: start;
-  overflow-y: auto;
+  grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
+  gap: 28px;
+  flex: 0 1 auto;
+  max-height: min(38vh, 380px);
+  /* Stay ≤ max-height on short windows; otherwise hold ~176px so cards don't collapse */
+  min-height: min(176px, min(38vh, 380px));
+  align-items: stretch;
 }
 
-.home-main {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.home-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-width: 0;
+.home-bottom > * {
+  min-height: 0;
 }
 
 .headline {
   font-family: var(--font-display);
-  font-size: 38px;
+  font-size: 44px;
   font-weight: 400;
   line-height: 1.1;
-  margin: 0 0 22px;
+  margin: 0 0 28px;
   color: var(--text-primary);
 }
 
@@ -53,8 +51,8 @@
   color: var(--accent);
 }
 
-.error-msg {
-  margin-top: 14px;
-  font-size: 14px;
-  color: var(--red);
+.app > .results-view,
+.app > .detail-view {
+  flex: 1;
+  min-height: 0;
 }

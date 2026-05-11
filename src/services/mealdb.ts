@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { COMMON_INGREDIENT_NAMES } from '../data/commonIngredients';
+import type { RecipeMatch, UnifiedRecipe } from '../types';
 import { getCustomIngredientNames } from './customIngredients';
 
 const BASE = 'https://www.themealdb.com/api/json/v1/1';
@@ -23,35 +24,6 @@ export function mealImageSrc(
     base = base.replace(sized, '');
   }
   return `${base}/${size}`;
-}
-
-export type RecipeSource = 'spoonacular' | 'mealdb';
-
-export interface UnifiedRecipe {
-  id: string;
-  source: RecipeSource;
-  title: string;
-  image: string;
-  category?: string;
-  area?: string;
-  tags: string[];
-  instructions: string[];
-  ingredients: { name: string; measure: string }[];
-  sourceUrl?: string;
-  youtubeUrl?: string;
-  readyInMinutes?: number;
-  servings?: number;
-  vegan: boolean;
-  vegetarian: boolean;
-  glutenFree: boolean;
-  dairyFree: boolean;
-}
-
-export interface RecipeMatch {
-  recipe: UnifiedRecipe;
-  matchedIngredients: string[];
-  missingIngredients: string[];
-  matchScore: number;
 }
 
 export interface Meal {
@@ -150,6 +122,7 @@ export function mapMealToUnifiedRecipe(meal: Meal): UnifiedRecipe {
   return {
     id: `mdb-${meal.idMeal}`,
     source: 'mealdb',
+    sourceId: meal.idMeal,
     title: meal.strMeal,
     image: meal.strMealThumb ?? '',
     category: meal.strCategory ?? undefined,

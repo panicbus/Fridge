@@ -4,7 +4,7 @@ import {
   type DietPreference,
 } from '../services/dietFilter';
 import { recordIngredientUsage } from '../services/ingredientUsage';
-import type { RecipeMatch } from '../services/mealdb';
+import type { RecipeMatch } from '../types';
 import { rememberIngredientName } from '../services/customIngredients';
 import { addToPantry, bumpUsage } from '../services/pantry';
 import {
@@ -12,11 +12,14 @@ import {
   rankingModeToPreferences,
   type RankingMode,
 } from '../services/recipeOrchestrator';
+import { getSavedRecipeById } from '../services/savedRecipes';
 import { getSpoonacularErrorBanner } from '../services/spoonacular';
 
 const RANKING_STORAGE_KEY = 'fridge.dietPreference';
 
-type View = 'home' | 'results' | 'detail';
+type View = 'home' | 'results' | 'detail' | 'saved';
+
+type DetailReturnView = 'results' | 'saved';
 
 function readRankingMode(): RankingMode {
   try {
@@ -60,7 +63,10 @@ export interface FridgeAppState {
   handleRemoveIngredient: (name: string) => void;
   handleSearch: () => Promise<void>;
   handleSelectRecipe: (match: RecipeMatch) => void;
+  handleSelectSavedRecipe: (recipeId: string) => void;
+  handleOpenSaved: () => void;
   handleBack: () => void;
+  pantryRefreshKey: number;
 }
 
 export function useFridgeAppState(): FridgeAppState {
@@ -77,6 +83,13 @@ export function useFridgeAppState(): FridgeAppState {
   const [spoonacularNotice, setSpoonacularNotice] = useState<
     '401' | '402' | null
   >(null);
+  const [pantryRefreshKey, setPantryRefreshKey] = useState(0);
+  const [detailReturnView, setDetailReturnView] =
+    useState<DetailReturnView>('results');
+
+  const bumpPantryRevision = useCallback(() => {
+    setPantryRefreshKey((k) => k + 1);
+  }, []);
 
   const setRankingMode = useCallback((m: RankingMode) => {
     setRankingModeState(m);
@@ -111,8 +124,10 @@ export function useFridgeAppState(): FridgeAppState {
 
     rememberIngredientName(trimmed);
     addToPantry(lower);
+    bumpUsage([lower]);
     recordIngredientUsage(lower);
-  }, []);
+    bumpPantryRevision();
+  }, [bumpPantryRevision]);
 
   const handleRemoveIngredient = useCallback((raw: string) => {
     const lower = raw.trim().toLowerCase();
@@ -129,6 +144,7 @@ export function useFridgeAppState(): FridgeAppState {
     setSpoonacularNotice(null);
     try {
       bumpUsage(ings.map((x) => x.trim().toLowerCase()));
+      bumpPantryRevision();
       const prefs = rankingModeToPreferences(rankingMode);
       const list = await findRecipes(ings, prefs);
       setRecipes(list);
@@ -143,22 +159,42 @@ export function useFridgeAppState(): FridgeAppState {
     } finally {
       setLoading(false);
     }
-  }, [ingredients, rankingMode]);
+  }, [ingredients, rankingMode, bumpPantryRevision]);
 
   const handleSelectRecipe = useCallback((match: RecipeMatch) => {
+    setDetailReturnView('results');
     setSelected(match);
     setView('detail');
+  }, []);
+
+  const handleSelectSavedRecipe = useCallback((recipeId: string) => {
+    const row = getSavedRecipeById(recipeId);
+    if (!row) return;
+    setDetailReturnView('saved');
+    setSelected({
+      recipe: row.recipe,
+      matchedIngredients: [],
+      missingIngredients: [],
+      matchScore: 1,
+    });
+    setView('detail');
+  }, []);
+
+  const handleOpenSaved = useCallback(() => {
+    setView('saved');
   }, []);
 
   const handleBack = useCallback(() => {
     if (view === 'detail') {
       setSelected(null);
-      setView('results');
+      setView(detailReturnView);
+    } else if (view === 'saved') {
+      setView('home');
     } else if (view === 'results') {
       setRecipes([]);
       setView('home');
     }
-  }, [view]);
+  }, [view, detailReturnView]);
 
   return {
     view,
@@ -178,6 +214,9 @@ export function useFridgeAppState(): FridgeAppState {
     handleRemoveIngredient,
     handleSearch,
     handleSelectRecipe,
+    handleSelectSavedRecipe,
+    handleOpenSaved,
     handleBack,
+    pantryRefreshKey,
   };
 }

@@ -1,4 +1,5 @@
-import { findRecipesMealDB, type RecipeMatch } from './mealdb';
+import type { RecipeMatch } from '../types';
+import { findRecipesMealDB } from './mealdb';
 import {
   clearSpoonacularError,
   findRecipesSpoonacular,

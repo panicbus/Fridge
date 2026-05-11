@@ -3,15 +3,20 @@
   flex-direction: column;
   background: var(--bg-pantry);
   border-radius: var(--radius-lg);
-  padding: 14px 16px 12px;
+  padding: 12px 14px 10px;
+  box-sizing: border-box;
   color: var(--text-cream);
+  min-height: 100%;
+  max-height: 100%;
+  overflow: hidden;
 }
 
-.pantry-card-header {
+.pantry-card-header-row {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 10px;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .pantry-card-kicker {
@@ -20,43 +25,20 @@
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--text-cream-muted);
+  flex-shrink: 0;
 }
 
-.pantry-card-manage {
-  padding: 0;
-  margin: 0;
-  font-size: 11px;
-  color: var(--accent-yellow);
-  cursor: pointer;
-  background: none;
-  border: none;
-}
-
-.pantry-card-inner {
-  margin: 0 -16px;
-}
-
-.pantry-card-empty {
-  margin: 8px 16px 4px;
-  font-size: 12px;
-  font-style: italic;
-  color: var(--text-cream-muted);
-  line-height: 1.45;
-}
-
-.pantry-card-search-row {
-  margin: 0 16px 10px;
-}
-
-.pantry-card-search-shell {
+.pantry-card-search-inline {
+  flex: 1;
+  max-width: 280px;
   display: flex;
   align-items: center;
   gap: 8px;
-  height: 39px;
+  height: 30px;
   padding: 0 12px;
   background: var(--bg-pantry-search);
   border: 1px solid var(--bg-pantry-search-border);
-  border-radius: 12px;
+  border-radius: 999px;
 }
 
 .pantry-search-input {
@@ -73,54 +55,131 @@
 }
 
 .pantry-search-input::placeholder {
-  color: rgba(245, 239, 228, 0.78);
+  color: rgba(255, 255, 255, 0.55);
   opacity: 1;
 }
 
-.pantry-card-search-icon {
+.pantry-search-input::-webkit-input-placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.pantry-card-search-svg {
   flex-shrink: 0;
   color: var(--text-cream);
   opacity: 0.85;
 }
 
+.pantry-card-manage {
+  padding: 0;
+  margin: 0;
+  font-size: 11px;
+  color: var(--accent-yellow);
+  cursor: pointer;
+  background: none;
+  border: none;
+  flex-shrink: 0;
+}
+
+.pantry-card-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pantry-card-empty {
+  margin: 12px 8px;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--text-cream-muted);
+  text-align: center;
+}
+
+.pantry-card-split {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+}
+
+.pantry-card-split--staples-only {
+  gap: 0;
+}
+
+.pantry-card-split--staples-only .pantry-col--staples {
+  max-width: none;
+}
+
+.pantry-col {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.pantry-col--recent {
+  flex: 0 0 auto;
+  max-width: 280px;
+}
+
+.pantry-col--staples {
+  flex: 1;
+  min-width: 0;
+}
+
+.pantry-divider {
+  width: 1px;
+  flex-shrink: 0;
+  align-self: center;
+  height: 80%;
+  max-height: 100%;
+  margin: 0 2px;
+  background: rgba(245, 239, 228, 0.42);
+  box-shadow: 0 0 0 1px rgba(26, 24, 21, 0.045);
+}
+
 .pantry-card-section-label {
-  margin: 0 16px 6px;
+  margin: 0 0 6px;
   font-size: 10px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--text-cream-muted);
 }
 
-.pantry-chip-list {
+.pantry-chip-wrap {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
+  align-content: flex-start;
 }
 
-.pantry-chip-list--recent {
-  margin: 0 16px 6px;
-}
-
-.pantry-chip-list--flat {
-  margin: 0 16px 4px;
-}
-
-.pantry-chip-list--staples {
-  margin: 0 16px 4px;
-  max-height: 92px;
+.pantry-chip-scroll {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
-  padding-bottom: 4px;
-  scrollbar-width: none;
-  mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+  padding-right: 4px;
+  mask-image: linear-gradient(to bottom, black 82%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 82%, transparent 100%);
 }
 
-.pantry-chip-list--staples::-webkit-scrollbar {
+.pantry-chip-scroll::-webkit-scrollbar {
   display: none;
+}
+
+.pantry-chip-scroll {
+  scrollbar-width: none;
+}
+
+.pantry-chip-scroll--flat {
+  max-height: 140px;
+}
+
+.pantry-chip-scroll--staples {
+  align-content: flex-start;
 }
 
 .pantry-chip {
   flex-shrink: 0;
+  height: fit-content;
   padding: 4px 10px;
   font-size: 12px;
   color: var(--text-cream);

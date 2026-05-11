@@ -1,5 +1,7 @@
 import {
   getPantry,
+  getRecentlyUsed,
+  getStaples,
   searchPantry,
   type PantryItem,
 } from '../services/pantry';
@@ -14,7 +16,10 @@ export interface UsePantryResult {
 export function usePantry(
   activeIngredients: string[],
   searchQuery: string,
+  pantryRevision: number,
 ): UsePantryResult {
+  void pantryRevision;
+
   const activeLower = new Set(
     activeIngredients.map((x) => x.trim().toLowerCase()).filter(Boolean),
   );
@@ -22,8 +27,7 @@ export function usePantry(
   const filterActive = (items: PantryItem[]): PantryItem[] =>
     items.filter((i) => !activeLower.has(i.name));
 
-  const pantrySorted = getPantry();
-  const total = pantrySorted.length;
+  const total = getPantry().length;
 
   if (searchQuery.trim()) {
     const matches = filterActive(searchPantry(searchQuery));
@@ -35,10 +39,9 @@ export function usePantry(
     };
   }
 
-  const pool = filterActive(pantrySorted);
   return {
-    recent: pool.slice(0, 4),
-    staples: pool.slice(4),
+    recent: filterActive(getRecentlyUsed(10)),
+    staples: filterActive(getStaples(activeIngredients)),
     total,
     searchResults: [],
   };

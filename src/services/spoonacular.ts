@@ -1,5 +1,5 @@
 import axios, { isAxiosError } from 'axios';
-import type { RecipeMatch, UnifiedRecipe } from './mealdb';
+import type { RecipeMatch, UnifiedRecipe } from '../types';
 
 const BASE = 'https://api.spoonacular.com';
 
@@ -172,6 +172,7 @@ function mapInfoToUnified(
   return {
     id: `spn-${info.id}`,
     source: 'spoonacular',
+    sourceId: String(info.id),
     title: info.title,
     image: normalizeSpoonacularImageUrl(info.image || findRow.image, info.id),
     category: info.dishTypes?.[0],

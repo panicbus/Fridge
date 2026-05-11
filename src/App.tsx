@@ -4,6 +4,7 @@ import IngredientBag from './components/IngredientBag';
 import DietPicker from './components/DietPicker';
 import SavedCard from './components/SavedCard';
 import PantryCard from './components/PantryCard';
+import SavedView from './components/SavedView';
 import ResultsView from './components/ResultsView';
 import RecipeDetailScreen from './components/RecipeDetailScreen';
 import { useFridgeAppState } from './hooks/useFridgeAppState';
@@ -28,43 +29,61 @@ export default function App() {
     handleRemoveIngredient,
     handleSearch,
     handleSelectRecipe,
+    handleSelectSavedRecipe,
+    handleOpenSaved,
     handleBack,
+    pantryRefreshKey,
   } = useFridgeAppState();
 
   return (
     <div className="app">
       {view === 'home' && (
         <div className="home-layout">
-          <Header />
-          <div className="home-grid">
-            <div className="home-main">
-              <h1 className="headline">
-                What can I cook <em>with what I have?</em>
-              </h1>
+          <Header
+            onSaved={handleOpenSaved}
+            onHistory={() => {
+              console.log('history — coming soon');
+            }}
+            onSettings={() => {
+              console.log('settings — coming soon');
+            }}
+          />
 
-              <IngredientBag
-                ingredients={ingredients}
-                onAdd={handleAddIngredient}
-                onRemove={handleRemoveIngredient}
-                onSearch={() => void handleSearch()}
-                loading={loading}
-              />
+          <section className="home-top">
+            <h1 className="headline">
+              What&apos;s <em>in your kitchen?</em>
+            </h1>
 
-              <DietPicker value={rankingMode} onChange={setRankingMode} />
+            <IngredientBag
+              ingredients={ingredients}
+              onAdd={handleAddIngredient}
+              onRemove={handleRemoveIngredient}
+              onSearch={() => void handleSearch()}
+              loading={loading}
+            />
 
-              {error ? <p className="error-msg">{error}</p> : null}
-            </div>
+            <DietPicker value={rankingMode} onChange={setRankingMode} />
 
-            <aside className="home-sidebar">
-              <SavedCard count={0} onViewAll={() => {}} />
-              <PantryCard
-                activeIngredients={ingredients}
-                onAddIngredient={handleAddIngredient}
-                onManage={() => {}}
-              />
-            </aside>
-          </div>
+            {error ? <p className="error-msg">{error}</p> : null}
+          </section>
+
+          <section className="home-bottom">
+            <SavedCard
+              onViewAll={handleOpenSaved}
+              onSelectRecipe={handleSelectSavedRecipe}
+            />
+            <PantryCard
+              activeIngredients={ingredients}
+              onAddIngredient={handleAddIngredient}
+              onManage={() => {}}
+              pantryRevision={pantryRefreshKey}
+            />
+          </section>
         </div>
+      )}
+
+      {view === 'saved' && (
+        <SavedView onBack={handleBack} onSelectRecipe={handleSelectSavedRecipe} />
       )}
 
       {view === 'results' && (
@@ -76,6 +95,7 @@ export default function App() {
           onPlateFilterChange={setPlateFilter}
           rankingMode={rankingMode}
           onNewSearch={handleBack}
+          onOpenSaved={handleOpenSaved}
           onSelectRecipe={handleSelectRecipe}
           spoonacularNotice={spoonacularNotice}
           onDismissSpoonacularNotice={dismissSpoonacularNotice}

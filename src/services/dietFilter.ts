@@ -1,4 +1,4 @@
-import type { RecipeMatch, UnifiedRecipe } from './mealdb';
+import type { RecipeMatch, UnifiedRecipe } from '../types';
 
 export type DietPreference = 'vegan' | 'vegetarian' | 'pescatarian' | 'carnivore';
 

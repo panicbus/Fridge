@@ -92,18 +92,24 @@ export function bumpUsage(names: string[]): void {
   if (changed) write(items);
 }
 
-export function getRecentlyUsed(limit = 4): PantryItem[] {
+/** Top N by lastUsed (consumer filters active search ingredients). Default 10. */
+export function getRecentlyUsed(limit = 10): PantryItem[] {
   return getPantry().slice(0, limit);
 }
 
-/** Pantry items excluding active search names, omitting the top four (shown as “recent”). */
+/**
+ * Items beyond the top 10 recently-used, excluding names in excludeNames (e.g. bag).
+ */
 export function getStaples(excludeNames: string[] = []): PantryItem[] {
   const ex = new Set(excludeNames.map((x) => x.trim().toLowerCase()));
-  return getPantry()
-    .filter((i) => !ex.has(i.name))
-    .slice(4);
+  const sorted = getPantry();
+  const recentNames = new Set(sorted.slice(0, 10).map((i) => i.name));
+  return sorted.filter(
+    (i) => !ex.has(i.name) && !recentNames.has(i.name),
+  );
 }
 
+/** Case-insensitive substring match; returns matching items (no recent/staples split). */
 export function searchPantry(query: string): PantryItem[] {
   const q = query.trim().toLowerCase();
   if (!q) return getPantry();

@@ -42,3 +42,25 @@ npm run build    # Typecheck, bundle renderer, compile Electron main
 - `src/services/mealdb.ts` — TheMealDB client; `findRecipesMealDB()` for MealDB-only use
 - `src/services/spoonacular.ts` — Spoonacular client
 - `src/services/recipeOrchestrator.ts` — `findRecipes()` merges both sources, dedupes, and applies ranking
+
+## Saved Recipes
+
+Tap the bookmark on any recipe card or detail view to save it. Saved recipes appear in the home view's Saved card and in the full Saved view (accessed via the top bar or the "view all" link).
+
+Saved recipes are snapshotted at save time and work fully offline — they survive API outages, quota limits, and recipe changes at the source.
+
+Storage: `localStorage` under `fridge.savedRecipes`. Future versions will sync to a cloud backend without requiring data migration on your end — the storage adapter is designed for it.
+
+## Icon assets
+
+- `src/assets/logo-full.svg` — full-detail logo (same artwork as inlined in the homepage header)
+- `public/favicon.svg` — simplified favicon for browser tabs (handles dropped, thicker strokes)
+- `build/icon-source.svg` → `build/icon.png` → `build/icon.icns` — macOS app icon pipeline
+
+To regenerate the macOS app icon after changing the source SVG:
+
+```bash
+./scripts/build-icon.sh
+```
+
+Requires macOS (`sips` and `iconutil` are system tools). The script uses `rsvg-convert` when available; otherwise it runs `npx sharp-cli` to rasterize the SVG to PNG.

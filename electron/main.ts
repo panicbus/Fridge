@@ -7,6 +7,8 @@ const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
 const preloadPath = path.join(__dirname, 'preload.js');
 
 function createWindow(): void {
+  const iconPath = path.join(__dirname, '../build/icon.png');
+
   const win = new BrowserWindow({
     width: 1200,
     height: 820,
@@ -14,6 +16,7 @@ function createWindow(): void {
     minHeight: 600,
     titleBarStyle: 'hiddenInset',
     backgroundColor: '#f5efe4',
+    icon: iconPath,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,

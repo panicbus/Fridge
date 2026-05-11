@@ -3,6 +3,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
+  margin-top: 4px;
 }
 
 .diet-picker-label {
@@ -27,8 +28,9 @@
     color 0.15s ease;
 }
 
-.diet-picker-pill:hover {
+.diet-picker-pill:not(.diet-picker-pill--active):hover {
   border-color: var(--text-muted);
+  color: var(--text-primary);
 }
 
 .diet-picker-pill--active {

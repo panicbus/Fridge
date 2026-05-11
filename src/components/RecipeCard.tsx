@@ -1,14 +1,23 @@
 import CachedMealImage from './CachedMealImage';
-import { recipeCardImageSrc, type RecipeMatch } from '../services/mealdb';
+import SaveButton from './SaveButton';
+import { recipeCardImageSrc } from '../services/mealdb';
+import type { RecipeMatch } from '../types';
 import './RecipeCard.css';
 
 export interface RecipeCardProps {
   match: RecipeMatch;
   index: number;
   onClick: () => void;
+  /** When set, replaces match bar + ingredient badges (e.g. saved recipes list). */
+  savedNote?: string;
 }
 
-export default function RecipeCard({ match, index, onClick }: RecipeCardProps) {
+export default function RecipeCard({
+  match,
+  index,
+  onClick,
+  savedNote,
+}: RecipeCardProps) {
   const { recipe, matchedIngredients, missingIngredients, matchScore } = match;
   const pct = Math.round(matchScore * 100);
 
@@ -47,6 +56,9 @@ export default function RecipeCard({ match, index, onClick }: RecipeCardProps) {
         ) : (
           <div className="recipe-thumb-placeholder" />
         )}
+        <div className="recipe-save-slot">
+          <SaveButton recipe={recipe} size="sm" variant="overlay" />
+        </div>
         {recipe.category && (
           <span className="recipe-category">{recipe.category}</span>
         )}
@@ -69,30 +81,36 @@ export default function RecipeCard({ match, index, onClick }: RecipeCardProps) {
         {metaLine ? (
           <p className="recipe-meta-sub">{metaLine}</p>
         ) : null}
-        <div className="match-bar-wrap">
-          <div className="match-bar">
-            <div
-              className="match-fill"
-              style={{ width: `${Math.min(100, pct)}%` }}
-            />
-          </div>
-          <span className="match-label">{pct}% match</span>
-        </div>
-        <div className="ingredient-badges">
-          {haveShow.map((t) => (
-            <span key={`h-${t}`} className="badge-have">
-              {t}
-            </span>
-          ))}
-          {missShow.map((t) => (
-            <span key={`m-${t}`} className="badge-missing">
-              {t}
-            </span>
-          ))}
-          {overflow > 0 && (
-            <span className="badge-missing badge-overflow">+{overflow}</span>
-          )}
-        </div>
+        {savedNote ? (
+          <p className="recipe-saved-note">{savedNote}</p>
+        ) : (
+          <>
+            <div className="match-bar-wrap">
+              <div className="match-bar">
+                <div
+                  className="match-fill"
+                  style={{ width: `${Math.min(100, pct)}%` }}
+                />
+              </div>
+              <span className="match-label match-pct">{pct}% match</span>
+            </div>
+            <div className="ingredient-badges">
+              {haveShow.map((t) => (
+                <span key={`h-${t}`} className="badge-have">
+                  {t}
+                </span>
+              ))}
+              {missShow.map((t) => (
+                <span key={`m-${t}`} className="badge-missing">
+                  {t}
+                </span>
+              ))}
+              {overflow > 0 && (
+                <span className="badge-missing badge-overflow">+{overflow}</span>
+              )}
+            </div>
+          </>
+        )}
         <span className="recipe-arrow" aria-hidden>
           →
         </span>

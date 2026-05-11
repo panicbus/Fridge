@@ -1,6 +1,6 @@
 import React from 'react';
 import RecipeDetail from './RecipeDetail';
-import type { RecipeMatch } from '../services/mealdb';
+import type { RecipeMatch } from '../types';
 import type { RankingMode } from '../services/recipeOrchestrator';
 import './RecipeDetailScreen.css';
 

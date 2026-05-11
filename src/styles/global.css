@@ -32,7 +32,7 @@
   --radius-md: 10px;
   --radius-lg: 14px;
   --radius-xl: 16px;
-  --font-display: Georgia, serif;
+  --font-display: Georgia, 'Fraunces', serif;
   --font-body: 'Inter', -apple-system, sans-serif;
 
   /* Derived — used across recipe/results/detail UI */

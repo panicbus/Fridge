@@ -1,13 +1,14 @@
 .ingredient-bag-wrap {
   position: relative;
-  margin-bottom: 14px;
+  margin-bottom: 22px;
 }
 
 .ingredient-bag {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  padding: 8px;
+  padding: 12px 12px 10px;
+  box-shadow: 0 2px 24px rgba(26, 24, 21, 0.04);
 }
 
 .ingredient-bag-tags-row {
@@ -59,6 +60,10 @@
 .ingredient-bag-input::placeholder {
   color: var(--text-muted);
   font-style: italic;
+}
+
+.ingredient-bag-footer-placeholder {
+  min-width: 1px;
 }
 
 .ingredient-bag-footer {

@@ -1,0 +1,157 @@
+@keyframes saveBookmarkWiggle {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  20% {
+    transform: scale(1.25) rotate(-8deg);
+  }
+  40% {
+    transform: scale(1.15) rotate(7deg);
+  }
+  60% {
+    transform: scale(1.2) rotate(-5deg);
+  }
+  80% {
+    transform: scale(1.1) rotate(3deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes saveBurstLine {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.4);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-22px) scale(1);
+  }
+}
+
+.save-button {
+  flex-shrink: 0;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text-primary);
+  position: relative;
+}
+
+.save-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.save-button-hit {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.save-button--variant-overlay {
+  border-radius: 999px;
+  padding: 8px;
+  background: rgba(255, 251, 243, 0.92);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.save-button--variant-overlay:hover {
+  transform: translateY(-1px);
+}
+
+.save-button--variant-overlay:active {
+  transform: translateY(0);
+}
+
+.save-button--variant-inline:hover {
+  transform: translateY(-1px);
+}
+
+.save-button--variant-inline:hover .save-button-bookmark:not(.bouncing) {
+  opacity: 1;
+}
+
+.save-button--variant-inline:hover[aria-pressed='true'] .save-button-bookmark {
+  filter: brightness(1.08);
+}
+
+.save-button--size-sm .save-button-bookmark {
+  width: 16px;
+  height: 20px;
+}
+
+.save-button--size-md .save-button-bookmark {
+  width: 22px;
+  height: 28px;
+}
+
+.save-button-bookmark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+}
+
+.save-button-bookmark svg[fill='var(--accent)'],
+.save-button[aria-pressed='true'] .save-button-bookmark {
+  opacity: 1;
+}
+
+.save-button-bookmark.bouncing {
+  animation: saveBookmarkWiggle 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.save-burst {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.save-burst-arm {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+}
+
+.save-burst-arm--c {
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.save-burst-arm--l {
+  transform: translate(-50%, -50%) rotate(-50deg);
+}
+
+.save-burst-arm--r {
+  transform: translate(-50%, -50%) rotate(50deg);
+}
+
+.save-burst-line {
+  position: absolute;
+  top: 0;
+  left: -1px;
+  width: 2px;
+  height: 8px;
+  margin-top: -4px;
+  background: var(--accent);
+  border-radius: 1px;
+  animation: saveBurstLine 0.6s ease-out forwards;
+}
+
+.save-button[aria-pressed='true'] .save-button-bookmark {
+  opacity: 1;
+}

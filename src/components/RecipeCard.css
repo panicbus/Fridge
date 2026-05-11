@@ -10,12 +10,15 @@
   animation: fadeUp 0.4s ease both;
   transition:
     border-color 0.2s ease,
-    transform 0.2s ease;
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  box-shadow: none;
 }
 
 .recipe-card:hover {
   border-color: var(--border-hover);
   transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(26, 24, 21, 0.1);
 }
 
 .recipe-thumb {
@@ -29,17 +32,19 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.4s ease;
-}
-
-.recipe-card:hover .recipe-thumb-img {
-  transform: scale(1.05);
 }
 
 .recipe-thumb-placeholder {
   width: 100%;
   height: 100%;
   background: var(--bg-input);
+}
+
+.recipe-save-slot {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
 }
 
 .recipe-category {
@@ -55,7 +60,7 @@
   background: rgba(26, 24, 21, 0.72);
   backdrop-filter: blur(4px);
   border-radius: var(--radius-sm);
-  max-width: calc(100% - 120px);
+  max-width: calc(100% - 52px);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -63,13 +68,13 @@
 
 .recipe-diet-badges {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  bottom: 10px;
+  left: 10px;
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 4px;
-  max-width: 55%;
+  max-width: calc(100% - 24px);
 }
 
 .diet-badge {
@@ -120,6 +125,14 @@
   margin-top: -6px;
 }
 
+.recipe-saved-note {
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: -4px;
+}
+
 .match-bar-wrap {
   display: flex;
   align-items: center;
@@ -136,15 +149,15 @@
 
 .match-fill {
   height: 100%;
-  background: var(--accent);
+  background: #4a6e52;
   border-radius: 2px;
   transition: width 0.6s ease;
 }
 
-.match-label {
+.match-label.match-pct {
   font-size: 12px;
   font-weight: 500;
-  color: var(--accent);
+  color: #4a6e52;
   white-space: nowrap;
 }
 
@@ -158,18 +171,18 @@
   padding: 3px 8px;
   font-size: 11px;
   font-weight: 500;
-  color: var(--green);
-  background: var(--green-bg);
-  border: 1px solid rgba(74, 110, 82, 0.35);
+  color: #4a6e52;
+  background: rgba(74, 110, 82, 0.15);
+  border: 1px solid rgba(74, 110, 82, 0.4);
   border-radius: 10px;
 }
 
 .badge-missing {
   padding: 3px 8px;
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--tag-text);
   background: var(--bg-tag);
-  border: 1px solid var(--border);
+  border: 1px solid var(--tag-border);
   border-radius: 10px;
 }
 

@@ -4,7 +4,7 @@ import DietFilterBar from './DietFilterBar';
 import ResultsHeader from './ResultsHeader';
 import ResultsEmptyState from './ResultsEmptyState';
 import ResultsGrid from './ResultsGrid';
-import type { RecipeMatch } from '../services/mealdb';
+import type { RecipeMatch } from '../types';
 import type { RankingMode } from '../services/recipeOrchestrator';
 import './ResultsView.css';
 
@@ -16,6 +16,7 @@ export interface ResultsViewProps {
   onPlateFilterChange: (v: DietPreference | null) => void;
   rankingMode: RankingMode;
   onNewSearch: () => void;
+  onOpenSaved?: () => void;
   onSelectRecipe: (match: RecipeMatch) => void;
   spoonacularNotice: '401' | '402' | null;
   onDismissSpoonacularNotice: () => void;
@@ -29,6 +30,7 @@ export default function ResultsView({
   onPlateFilterChange,
   rankingMode,
   onNewSearch,
+  onOpenSaved,
   onSelectRecipe,
   spoonacularNotice,
   onDismissSpoonacularNotice,
@@ -68,6 +70,7 @@ export default function ResultsView({
         recipeCount={recipes.length}
         ingredients={ingredients}
         onNewSearch={onNewSearch}
+        onOpenSaved={onOpenSaved}
       >
         <DietFilterBar
           compact

@@ -188,7 +188,11 @@ export default function IngredientBag({
           />
         </div>
         <div className="ingredient-bag-footer">
-          <span className="ingredient-bag-count">{countLabel}</span>
+          {count > 0 ? (
+            <span className="ingredient-bag-count">{countLabel}</span>
+          ) : (
+            <span className="ingredient-bag-footer-placeholder" aria-hidden />
+          )}
           <button
             type="button"
             className="ingredient-bag-search"

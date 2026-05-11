@@ -18,7 +18,7 @@ export default function DietPicker({ value, onChange }: DietPickerProps) {
         className={`diet-picker-pill ${value === 'vegan-first' ? 'diet-picker-pill--active' : ''}`}
         onClick={() => onChange('vegan-first')}
       >
-        ● vegan-first
+        {value === 'vegan-first' ? '● vegan-first' : 'vegan-first'}
       </button>
       <button
         type="button"
