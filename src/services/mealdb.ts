@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { COMMON_INGREDIENT_NAMES } from '../data/commonIngredients';
 import type { RecipeMatch, UnifiedRecipe } from '../types';
+import { normalizeInstructionSteps } from '../utils/instructionSteps';
+import { dedupeRecipeTags } from '../utils/recipeTags';
 import { getCustomIngredientNames } from './customIngredients';
 
 const BASE = 'https://www.themealdb.com/api/json/v1/1';
@@ -108,16 +110,20 @@ export function mapMealToUnifiedRecipe(meal: Meal): UnifiedRecipe {
     flags = { ...flags, vegetarian: true };
   }
 
-  const tags: string[] = [];
+  const rawTags: string[] = [];
   if (meal.strTags) {
-    tags.push(
+    rawTags.push(
       ...meal.strTags
         .split(',')
         .map((t) => t.trim().toLowerCase())
         .filter(Boolean),
     );
   }
-  if (meal.strCategory) tags.push(meal.strCategory.toLowerCase());
+  const tags = dedupeRecipeTags(
+    rawTags,
+    meal.strCategory ?? undefined,
+    meal.strArea ?? undefined,
+  );
 
   return {
     id: `mdb-${meal.idMeal}`,
@@ -128,7 +134,7 @@ export function mapMealToUnifiedRecipe(meal: Meal): UnifiedRecipe {
     category: meal.strCategory ?? undefined,
     area: meal.strArea ?? undefined,
     tags: [...new Set(tags)],
-    instructions: parseSteps(meal.strInstructions ?? ''),
+    instructions: normalizeInstructionSteps(meal.strInstructions ?? ''),
     ingredients: rows.map((r) => ({ name: r.name, measure: r.measure })),
     sourceUrl: meal.strSource ?? undefined,
     youtubeUrl: meal.strYoutube ?? undefined,
@@ -294,12 +300,7 @@ export async function findRecipesMealDB(
   return results;
 }
 
+/** @deprecated Prefer {@link normalizeInstructionSteps} from `utils/instructionSteps`. */
 export function parseSteps(instructions: string): string[] {
-  if (!instructions) return [];
-  return instructions
-    .split(/\r?\n/)
-    .map((line) =>
-      line.replace(/^\s*\d+[\.\)]\s*/, '').trim(),
-    )
-    .filter((line) => line.length >= 10);
+  return normalizeInstructionSteps(instructions);
 }

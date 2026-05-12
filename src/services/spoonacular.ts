@@ -1,5 +1,7 @@
 import axios, { isAxiosError } from 'axios';
 import type { RecipeMatch, UnifiedRecipe } from '../types';
+import { normalizeInstructionSteps } from '../utils/instructionSteps';
+import { dedupeRecipeTags } from '../utils/recipeTags';
 
 const BASE = 'https://api.spoonacular.com';
 
@@ -151,17 +153,18 @@ function mapInfoToUnified(
   for (const t of info.cuisines ?? []) {
     if (t) tagSet.add(t.toLowerCase());
   }
-  const tags = [...tagSet];
+  const tags = dedupeRecipeTags(
+    [...tagSet],
+    info.dishTypes?.[0],
+    info.cuisines?.[0],
+  );
 
   let instructions: string[] = [];
   const analyzed = info.analyzedInstructions?.[0]?.steps;
   if (analyzed?.length) {
     instructions = analyzed.map((s) => s.step.trim()).filter(Boolean);
   } else if (info.instructions?.trim()) {
-    instructions = info.instructions
-      .split(/\r?\n/)
-      .map((l) => l.replace(/^\s*\d+[\.\)]\s*/, '').trim())
-      .filter((l) => l.length >= 4);
+    instructions = normalizeInstructionSteps(info.instructions);
   }
 
   const ingredients = (info.extendedIngredients ?? []).map((ext) => ({

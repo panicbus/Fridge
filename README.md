@@ -73,6 +73,19 @@ Tap **Manage →** on the pantry card (or open the pantry from anywhere this vie
 
 Renamed ingredients preserve their usage history. Deleted ingredients are removed immediately — no confirmation, but they can be added back any time by typing them into a search.
 
+## Cook Mode
+
+Press **Enter cooking mode** on any recipe to enter a focused, hands-friendly cook mode:
+
+- One step at a time, in large readable type
+- Ingredients used in the current step shown inline with their measures
+- Smart timers — if a step says "simmer for 20 minutes", a tappable timer appears with that duration pre-set
+- The screen stays awake while cook mode is active
+- Tap anywhere or press space/arrow keys to advance through steps
+- A **Bon Appétit** celebration screen with a burst of utensils when you finish
+
+Timers can be toggled off via the clock icon in the top bar if you prefer to ignore them.
+
 ## Icon assets
 
 - `src/assets/logo-full.svg` — full-detail logo (same artwork as inlined in the homepage header)

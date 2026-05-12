@@ -1,3 +1,13 @@
+/** Top-level app screen / route */
+export type AppView =
+  | 'home'
+  | 'results'
+  | 'detail'
+  | 'saved'
+  | 'history'
+  | 'pantry-manage'
+  | 'cook-mode';
+
 export type RecipeSource = 'spoonacular' | 'mealdb';
 
 export interface UnifiedRecipe {

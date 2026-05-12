@@ -1,6 +1,6 @@
 {
   "name": "fridge",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "What's in your fridge? Get recipes.",
   "main": "dist-electron/main.js",
   "scripts": {
@@ -13,11 +13,13 @@
   },
   "dependencies": {
     "axios": "^1.6.0",
+    "pluralize": "^8.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
+    "@types/pluralize": "^0.0.33",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@vitejs/plugin-react": "^4.2.0",

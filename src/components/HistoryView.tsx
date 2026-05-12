@@ -8,6 +8,7 @@ import { recipeViewHistoryStore } from '../services/recipeViewHistory';
 import { searchHistoryStore } from '../services/searchHistory';
 import type { RecipeViewEntry, SearchHistoryEntry } from '../types';
 import { formatRelativeTime } from '../utils/relativeTime';
+import DropdownMenu from './DropdownMenu';
 import './HistoryView.css';
 
 const FALLBACK_GRADIENTS = [
@@ -106,21 +107,21 @@ export default function HistoryView({
         </button>
         <h1 className="history-view-title">History</h1>
         <div className="history-view-header-actions">
-          <label className="history-vegan-filter" htmlFor="history-vegan-first">
-            <span className="history-vegan-filter-label">Vegan first</span>
-            <select
-              id="history-vegan-first"
-              className="history-vegan-filter-select"
+          <div className="history-vegan-filter">
+            <span className="history-vegan-filter-label">
+              Vegan first
+            </span>
+            <DropdownMenu
+              ariaLabel="Vegan first filter for history lists"
               value={veganFirstFilterOn ? 'on' : 'off'}
-              onChange={(e) =>
-                setVeganFirstFilterOn(e.target.value === 'on')
-              }
-              aria-label="Vegan first filter for history lists"
-            >
-              <option value="on">On</option>
-              <option value="off">Off</option>
-            </select>
-          </label>
+              options={[
+                { value: 'on', label: 'On' },
+                { value: 'off', label: 'Off' },
+              ]}
+              onChange={(v) => setVeganFirstFilterOn(v === 'on')}
+              variant="compact"
+            />
+          </div>
         </div>
       </header>
 

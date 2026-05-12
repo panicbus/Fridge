@@ -5,6 +5,7 @@ import {
   searchPantry,
   type PantryItem,
 } from '../services/pantry';
+import { ingredientDedupeKey } from '../utils/ingredientDedupe';
 
 export interface UsePantryResult {
   recent: PantryItem[];
@@ -20,12 +21,14 @@ export function usePantry(
 ): UsePantryResult {
   void pantryRevision;
 
-  const activeLower = new Set(
-    activeIngredients.map((x) => x.trim().toLowerCase()).filter(Boolean),
+  const activeKeys = new Set(
+    activeIngredients
+      .map((x) => ingredientDedupeKey(x.trim().toLowerCase()))
+      .filter(Boolean),
   );
 
   const filterActive = (items: PantryItem[]): PantryItem[] =>
-    items.filter((i) => !activeLower.has(i.name));
+    items.filter((i) => !activeKeys.has(ingredientDedupeKey(i.name)));
 
   const total = getPantry().length;
 

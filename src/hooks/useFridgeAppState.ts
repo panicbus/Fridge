@@ -1,10 +1,10 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   recipeMatchMeetsDietPreference,
   type DietPreference,
 } from '../services/dietFilter';
 import { recordIngredientUsage } from '../services/ingredientUsage';
-import type { RecipeMatch } from '../types';
+import type { AppView, RecipeMatch, UnifiedRecipe } from '../types';
 import { rememberIngredientName } from '../services/customIngredients';
 import { addToPantry, bumpUsage } from '../services/pantry';
 import {
@@ -16,10 +16,12 @@ import { getRecipeViewById, recordRecipeView } from '../services/recipeViewHisto
 import { recordSearch } from '../services/searchHistory';
 import { getSavedRecipeById } from '../services/savedRecipes';
 import { getSpoonacularErrorBanner } from '../services/spoonacular';
+import {
+  dedupeIngredientNames,
+  ingredientDedupeKey,
+} from '../utils/ingredientDedupe';
 
 const RANKING_STORAGE_KEY = 'fridge.dietPreference';
-
-type View = 'home' | 'results' | 'detail' | 'saved' | 'history' | 'pantry-manage';
 
 export type DetailReturnView = 'results' | 'saved' | 'history';
 
@@ -48,7 +50,7 @@ function persistRankingMode(mode: RankingMode): void {
 }
 
 export interface FridgeAppState {
-  view: View;
+  view: AppView;
   ingredients: string[];
   recipes: RecipeMatch[];
   filteredRecipes: RecipeMatch[];
@@ -63,6 +65,7 @@ export interface FridgeAppState {
   dismissSpoonacularNotice: () => void;
   handleAddIngredient: (name: string) => void;
   handleRemoveIngredient: (name: string) => void;
+  handleClearIngredients: () => void;
   handleSearch: () => Promise<void>;
   handleSelectRecipe: (match: RecipeMatch) => void;
   handleSelectSavedRecipe: (recipeId: string) => void;
@@ -74,6 +77,11 @@ export interface FridgeAppState {
   handleBack: () => void;
   /** Leave recipe/detail flows and return to main ingredient screen */
   handleGoHome: () => void;
+  /** Enter focused cook mode for the current detail recipe */
+  handleStartCooking: () => void;
+  /** Leave cook mode back to recipe detail */
+  handleExitCookMode: () => void;
+  cookModeRecipe: UnifiedRecipe | null;
   /** Where detail Back navigates (results / saved / history) */
   detailReturnView: DetailReturnView;
   pantryRefreshKey: number;
@@ -81,10 +89,13 @@ export interface FridgeAppState {
 }
 
 export function useFridgeAppState(): FridgeAppState {
-  const [view, setView] = useState<View>('home');
+  const [view, setView] = useState<AppView>('home');
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [recipes, setRecipes] = useState<RecipeMatch[]>([]);
   const [selected, setSelected] = useState<RecipeMatch | null>(null);
+  const [cookModeRecipe, setCookModeRecipe] = useState<UnifiedRecipe | null>(
+    null,
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [rankingMode, setRankingModeState] = useState<RankingMode>(
@@ -118,6 +129,26 @@ export function useFridgeAppState(): FridgeAppState {
       ),
     [recipes, plateFilter],
   );
+
+  useEffect(() => {
+    if (view === 'cook-mode' && !cookModeRecipe) {
+      setView('home');
+    }
+  }, [view, cookModeRecipe]);
+
+  useEffect(() => {
+    if (view !== 'home') return;
+    setIngredients((prev) => {
+      const next = dedupeIngredientNames(prev);
+      if (
+        next.length === prev.length &&
+        next.every((x, i) => x === prev[i])
+      ) {
+        return prev;
+      }
+      return next;
+    });
+  }, [view]);
 
   const executeSearch = useCallback(
     async (ings: string[], mode: RankingMode) => {
@@ -157,9 +188,10 @@ export function useFridgeAppState(): FridgeAppState {
       if (!trimmed) return;
       const lower = trimmed.toLowerCase();
 
+      const addKey = ingredientDedupeKey(trimmed);
       let didAppend = false;
       setIngredients((prev) => {
-        if (prev.some((p) => p.toLowerCase() === lower)) return prev;
+        if (prev.some((p) => ingredientDedupeKey(p) === addKey)) return prev;
         didAppend = true;
         return [...prev, trimmed];
       });
@@ -180,6 +212,10 @@ export function useFridgeAppState(): FridgeAppState {
     setIngredients((prev) =>
       prev.filter((p) => p.toLowerCase() !== lower),
     );
+  }, []);
+
+  const handleClearIngredients = useCallback(() => {
+    setIngredients([]);
   }, []);
 
   const handleSearch = useCallback(async () => {
@@ -221,12 +257,13 @@ export function useFridgeAppState(): FridgeAppState {
 
   const handleReplaySearch = useCallback(
     (ings: string[], pref: RankingMode) => {
-      setIngredients(ings);
+      const normalized = dedupeIngredientNames(ings);
+      setIngredients(normalized);
       setRankingMode(pref);
       setRecipes([]);
       setView('results');
       queueMicrotask(() => {
-        void executeSearch(ings, pref);
+        void executeSearch(normalized, pref);
       });
     },
     [executeSearch, setRankingMode],
@@ -248,14 +285,27 @@ export function useFridgeAppState(): FridgeAppState {
 
   const handleGoHome = useCallback(() => {
     setSelected(null);
+    setCookModeRecipe(null);
     setRecipes([]);
     setPlateFilter(null);
     setView('home');
   }, []);
 
+  const handleStartCooking = useCallback(() => {
+    if (!selected) return;
+    setCookModeRecipe(selected.recipe);
+    setView('cook-mode');
+  }, [selected]);
+
+  const handleExitCookMode = useCallback(() => {
+    setCookModeRecipe(null);
+    setView('detail');
+  }, []);
+
   const handleBack = useCallback(() => {
     if (view === 'detail') {
       setSelected(null);
+      setCookModeRecipe(null);
       setView(detailReturnView);
     } else if (
       view === 'results' ||
@@ -284,6 +334,7 @@ export function useFridgeAppState(): FridgeAppState {
     dismissSpoonacularNotice,
     handleAddIngredient,
     handleRemoveIngredient,
+    handleClearIngredients,
     handleSearch,
     handleSelectRecipe,
     handleSelectSavedRecipe,
@@ -294,6 +345,9 @@ export function useFridgeAppState(): FridgeAppState {
     handleSelectHistoryRecipe,
     handleBack,
     handleGoHome,
+    handleStartCooking,
+    handleExitCookMode,
+    cookModeRecipe,
     detailReturnView,
     pantryRefreshKey,
     bumpPantryRevision,

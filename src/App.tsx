@@ -9,6 +9,7 @@ import HistoryView from './components/HistoryView';
 import PantryManageView from './components/PantryManageView';
 import ResultsView from './components/ResultsView';
 import RecipeDetailScreen from './components/RecipeDetailScreen';
+import CookModeView from './components/CookModeView';
 import { useFridgeAppState } from './hooks/useFridgeAppState';
 import './App.css';
 
@@ -29,6 +30,7 @@ export default function App() {
     dismissSpoonacularNotice,
     handleAddIngredient,
     handleRemoveIngredient,
+    handleClearIngredients,
     handleSearch,
     handleSelectRecipe,
     handleSelectSavedRecipe,
@@ -40,6 +42,9 @@ export default function App() {
     handleBack,
     handleGoHome,
     detailReturnView,
+    handleStartCooking,
+    handleExitCookMode,
+    cookModeRecipe,
     pantryRefreshKey,
     bumpPantryRevision,
   } = useFridgeAppState();
@@ -65,6 +70,7 @@ export default function App() {
               ingredients={ingredients}
               onAdd={handleAddIngredient}
               onRemove={handleRemoveIngredient}
+              onClear={handleClearIngredients}
               onSearch={() => void handleSearch()}
               loading={loading}
             />
@@ -139,9 +145,18 @@ export default function App() {
                 ? '← Back to history'
                 : '← Back to results'
           }
+          onStartCooking={handleStartCooking}
           rankingMode={rankingMode}
         />
       )}
+
+      {view === 'cook-mode' && cookModeRecipe ? (
+        <CookModeView
+          recipe={cookModeRecipe}
+          onExit={handleExitCookMode}
+          onGoHome={handleGoHome}
+        />
+      ) : null}
     </div>
   );
 }

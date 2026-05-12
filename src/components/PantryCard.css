@@ -11,25 +11,63 @@
   overflow: hidden;
 }
 
-.pantry-card-header-row {
+.pantry-card-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: 12px;
   margin-bottom: 12px;
-}
-
-.pantry-card-kicker {
-  margin: 0;
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--text-cream-muted);
   flex-shrink: 0;
 }
 
+.pantry-card-header-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: baseline;
+  width: 100%;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(245, 239, 228, 0.22);
+}
+
+.pantry-card-search-row {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.pantry-card-heading {
+  grid-column: 2;
+  justify-self: center;
+  margin: 0;
+  flex-shrink: 0;
+  min-width: 0;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--text-cream);
+}
+
+.pantry-card-heading-sep {
+  font-family: var(--font-body);
+  font-weight: 400;
+  letter-spacing: 0;
+  color: rgba(245, 239, 228, 0.45);
+}
+
+.pantry-card-heading-count {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--accent-yellow);
+}
+
 .pantry-card-search-inline {
-  flex: 1;
+  flex: 0 1 auto;
+  width: 100%;
   max-width: 280px;
   display: flex;
   align-items: center;
@@ -70,14 +108,36 @@
 }
 
 .pantry-card-manage {
-  padding: 0;
+  grid-column: 3;
+  justify-self: end;
+  padding: 6px 0 0;
   margin: 0;
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
   color: var(--accent-yellow);
   cursor: pointer;
   background: none;
   border: none;
   flex-shrink: 0;
+  text-decoration: underline;
+  text-decoration-color: rgba(245, 200, 76, 0.45);
+  text-underline-offset: 3px;
+}
+
+.pantry-card-manage:hover {
+  color: #fcd975;
+  text-decoration-color: rgba(252, 217, 117, 0.65);
+}
+
+.pantry-card-manage:focus {
+  outline: none;
+}
+
+.pantry-card-manage:focus-visible {
+  outline: 2px solid rgba(245, 200, 76, 0.65);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
 .pantry-card-body {

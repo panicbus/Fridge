@@ -10,6 +10,7 @@ export interface RecipeDetailScreenProps {
   onBack: () => void;
   onHome: () => void;
   backLabel: string;
+  onStartCooking: () => void;
   rankingMode?: RankingMode;
 }
 
@@ -19,6 +20,7 @@ export default function RecipeDetailScreen({
   onBack,
   onHome,
   backLabel,
+  onStartCooking,
   rankingMode,
 }: RecipeDetailScreenProps) {
   return (
@@ -29,6 +31,7 @@ export default function RecipeDetailScreen({
         onBack={onBack}
         onHome={onHome}
         backLabel={backLabel}
+        onStartCooking={onStartCooking}
         rankingMode={rankingMode}
       />
     </div>

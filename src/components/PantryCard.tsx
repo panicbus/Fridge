@@ -33,39 +33,55 @@ export default function PantryCard({
 
   return (
     <section className="pantry-card">
-      <div className="pantry-card-header-row">
-        <p className="pantry-card-kicker">— pantry · {total} —</p>
+      <div className="pantry-card-header">
+        <div className="pantry-card-header-row">
+          <h2 className="pantry-card-heading">
+            Pantry
+            <span className="pantry-card-heading-sep" aria-hidden>
+              {' '}
+              ·{' '}
+            </span>
+            <span className="pantry-card-heading-count">{total}</span>
+          </h2>
+          <button
+            type="button"
+            className="pantry-card-manage"
+            onClick={onManage}
+            aria-label="Manage pantry items"
+          >
+            manage pantry items
+          </button>
+        </div>
         {total > 0 ? (
-          <div className="pantry-card-search-inline">
-            <input
-              type="search"
-              className="pantry-search-input"
-              placeholder="search pantry..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              autoComplete="off"
-              aria-label="Search pantry"
-            />
-            <svg
-              width="13"
-              height="13"
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="pantry-card-search-svg"
-              aria-hidden
-            >
-              <circle cx="7" cy="7" r="5" fill="none" />
-              <line x1="11" y1="11" x2="14" y2="14" />
-            </svg>
+          <div className="pantry-card-search-row">
+            <div className="pantry-card-search-inline">
+              <input
+                type="search"
+                className="pantry-search-input"
+                placeholder="search pantry..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                autoComplete="off"
+                aria-label="Search pantry"
+              />
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="pantry-card-search-svg"
+                aria-hidden
+              >
+                <circle cx="7" cy="7" r="5" fill="none" />
+                <line x1="11" y1="11" x2="14" y2="14" />
+              </svg>
+            </div>
           </div>
         ) : null}
-        <button type="button" className="pantry-card-manage" onClick={onManage}>
-          manage →
-        </button>
       </div>
 
       <div className="pantry-card-body">

@@ -1,7 +1,20 @@
+import { ingredientDedupeKey } from '../utils/ingredientDedupe';
+
 const STORAGE_KEY = 'fridge-app:frequent-ingredients';
 const MAX_TRACKED = 100;
 
 type Counts = Record<string, number>;
+
+function consolidateCounts(counts: Counts): Counts {
+  const next: Counts = {};
+  for (const [k, v] of Object.entries(counts)) {
+    if (typeof v !== 'number' || !Number.isFinite(v) || v <= 0) continue;
+    const canon = ingredientDedupeKey(k);
+    if (!canon) continue;
+    next[canon] = (next[canon] ?? 0) + v;
+  }
+  return next;
+}
 
 function load(): Counts {
   try {
@@ -9,7 +22,7 @@ function load(): Counts {
     if (!raw) return {};
     const parsed = JSON.parse(raw) as unknown;
     if (!parsed || typeof parsed !== 'object') return {};
-    return parsed as Counts;
+    return consolidateCounts(parsed as Counts);
   } catch {
     return {};
   }
@@ -17,7 +30,10 @@ function load(): Counts {
 
 function save(counts: Counts): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(counts));
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(consolidateCounts(counts)),
+    );
   } catch {
     /* quota / private mode */
   }
@@ -25,7 +41,7 @@ function save(counts: Counts): void {
 
 /** Bump count for an ingredient whenever the user adds it as a tag (normalized lowercase). */
 export function recordIngredientUsage(normalizedName: string): void {
-  const k = normalizedName.trim().toLowerCase();
+  const k = ingredientDedupeKey(normalizedName.trim().toLowerCase());
   if (!k) return;
   const counts = load();
   counts[k] = (counts[k] ?? 0) + 1;
@@ -35,7 +51,7 @@ export function recordIngredientUsage(normalizedName: string): void {
 }
 
 export function getIngredientUsageCount(normalizedName: string): number {
-  const k = normalizedName.trim().toLowerCase();
+  const k = ingredientDedupeKey(normalizedName.trim().toLowerCase());
   if (!k) return 0;
   return load()[k] ?? 0;
 }
@@ -45,8 +61,8 @@ export function migrateIngredientUsageRename(
   oldName: string,
   newName: string,
 ): void {
-  const o = oldName.trim().toLowerCase();
-  const n = newName.trim().toLowerCase();
+  const o = ingredientDedupeKey(oldName.trim().toLowerCase());
+  const n = ingredientDedupeKey(newName.trim().toLowerCase());
   if (!o || !n || o === n) return;
   const counts = load();
   const prev = counts[o];
@@ -65,9 +81,12 @@ export function getFrequentIngredientSuggestions(
   limit: number,
   fallbacks: readonly string[],
 ): string[] {
+  const excludeKeys = new Set(
+    [...excludeLower].map((k) => ingredientDedupeKey(k)).filter(Boolean),
+  );
   const counts = load();
   const sorted = Object.entries(counts)
-    .filter(([k]) => !excludeLower.has(k))
+    .filter(([k]) => !excludeKeys.has(ingredientDedupeKey(k)))
     .sort((a, b) => b[1] - a[1])
     .map(([k]) => k);
 
@@ -75,15 +94,16 @@ export function getFrequentIngredientSuggestions(
   const seen = new Set<string>();
 
   for (const name of sorted) {
-    if (seen.has(name)) continue;
-    seen.add(name);
+    const dk = ingredientDedupeKey(name);
+    if (seen.has(dk)) continue;
+    seen.add(dk);
     out.push(name);
     if (out.length >= limit) return out;
   }
 
   for (const name of fallbacks) {
-    const k = name.toLowerCase();
-    if (excludeLower.has(k) || seen.has(k)) continue;
+    const k = ingredientDedupeKey(name.toLowerCase());
+    if (!k || excludeKeys.has(k) || seen.has(k)) continue;
     seen.add(k);
     out.push(name);
     if (out.length >= limit) break;

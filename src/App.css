@@ -24,7 +24,8 @@
 
 .home-bottom {
   display: grid;
-  grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
+  /* Saved : pantry = 30fr : 60fr (1:2). DOM order: SavedCard, PantryCard */
+  grid-template-columns: minmax(0, 30fr) minmax(0, 60fr);
   gap: 28px;
   flex: 0 1 auto;
   max-height: min(38vh, 380px);

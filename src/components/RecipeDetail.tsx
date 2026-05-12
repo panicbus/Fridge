@@ -4,6 +4,15 @@ import SaveButton from './SaveButton';
 import type { RecipeMatch } from '../types';
 import { recipeHeroImageSrc } from '../services/mealdb';
 import type { RankingMode } from '../services/recipeOrchestrator';
+import {
+  convertMetricMeasureToImperial,
+  convertRecipeStepTextToImperial,
+} from '../utils/imperialMeasures';
+import {
+  flagEmojiForOrigin,
+  formatOriginLabel,
+} from '../utils/areaFlag';
+import { dedupeRecipeTags } from '../utils/recipeTags';
 import './RecipeDetail.css';
 
 export interface RecipeDetailProps {
@@ -12,6 +21,7 @@ export interface RecipeDetailProps {
   onBack: () => void;
   onHome: () => void;
   backLabel: string;
+  onStartCooking: () => void;
   rankingMode?: RankingMode;
 }
 
@@ -26,13 +36,13 @@ export default function RecipeDetail({
   onBack,
   onHome,
   backLabel,
+  onStartCooking,
   rankingMode = 'show-all',
 }: RecipeDetailProps) {
   const { recipe } = match;
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(
     () => new Set(),
   );
-  const [cookMode, setCookMode] = useState(false);
 
   const normalizedUser = useMemo(
     () =>
@@ -62,8 +72,15 @@ export default function RecipeDetail({
   const showVeganAdvisory =
     rankingMode !== 'show-all' && !recipe.vegan;
 
+  const heroTags = useMemo(
+    () => dedupeRecipeTags(recipe.tags, recipe.category, recipe.area),
+    [recipe.tags, recipe.category, recipe.area],
+  );
+
+  const areaFlag = recipe.area ? flagEmojiForOrigin(recipe.area) : '';
+
   return (
-    <div className={`recipe-detail ${cookMode ? 'cook-mode' : ''}`}>
+    <div className="recipe-detail">
       <header className="detail-header">
         <div className="detail-header-nav">
           <button type="button" className="detail-home-cta" onClick={onHome}>
@@ -75,13 +92,6 @@ export default function RecipeDetail({
         </div>
         <div className="detail-header-spacer" aria-hidden />
         <SaveButton recipe={recipe} size="md" variant="inline" />
-        <button
-          type="button"
-          className={`cook-mode-btn ${cookMode ? 'active' : ''}`}
-          onClick={() => setCookMode((v) => !v)}
-        >
-          {cookMode ? '✕ Exit cook mode' : '👨‍🍳 Cook mode'}
-        </button>
       </header>
 
       <section className="detail-hero">
@@ -98,9 +108,16 @@ export default function RecipeDetail({
             {recipe.category && (
               <span className="hero-category">{recipe.category}</span>
             )}
-            {recipe.area && (
-              <span className="hero-area">{recipe.area}</span>
-            )}
+            {recipe.area ? (
+              <span className="hero-area-badge">
+                {areaFlag ? (
+                  <span className="hero-area-flag" aria-hidden="true">
+                    {areaFlag}
+                  </span>
+                ) : null}
+                <span>{formatOriginLabel(recipe.area)}</span>
+              </span>
+            ) : null}
             {recipe.vegan ? (
               <span className="hero-diet-badge hero-diet-badge--vegan">
                 🌱 Vegan
@@ -133,9 +150,9 @@ export default function RecipeDetail({
             ) : null}
           </div>
           <h1 className="hero-title">{recipe.title}</h1>
-          {recipe.tags.length > 0 && (
+          {heroTags.length > 0 && (
             <div className="hero-tags">
-              {recipe.tags.slice(0, 12).map((t) => (
+              {heroTags.slice(0, 12).map((t) => (
                 <span key={t} className="hero-tag">
                   {t}
                 </span>
@@ -146,17 +163,44 @@ export default function RecipeDetail({
       </section>
 
       {totalSteps > 0 && (
-        <div className="detail-progress-row">
-          <div className="detail-progress-bar">
-            <div
-              className="detail-progress-fill"
-              style={{ width: `${progressPct}%` }}
-            />
+        <>
+          <div className="detail-progress-row">
+            <div className="detail-progress-bar">
+              <div
+                className="detail-progress-fill"
+                style={{ width: `${progressPct}%` }}
+              />
+            </div>
+            <span className="detail-progress-label">
+              {doneCount} / {totalSteps} steps done
+            </span>
           </div>
-          <span className="detail-progress-label">
-            {doneCount} / {totalSteps} steps done
-          </span>
-        </div>
+          <div className="start-cooking-wrap">
+            <button
+              type="button"
+              className="start-cooking-btn"
+              onClick={onStartCooking}
+            >
+              <span className="start-cooking-icon" aria-hidden="true">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M3 12c0-4.97 4.03-9 9-9s9 4.03 9 9" />
+                  <path d="M3 12c0 4.97 4.03 9 9 9" />
+                  <path d="M8 12l3 3 5-6" />
+                </svg>
+              </span>
+              Enter cooking mode
+            </button>
+          </div>
+        </>
       )}
 
       <div className="detail-body">
@@ -180,7 +224,7 @@ export default function RecipeDetail({
                   <span className="ingredient-dot" aria-hidden />
                   <span className="ingredient-name">{row.name}</span>
                   <span className="ingredient-measure">
-                    {row.measure}
+                    {convertMetricMeasureToImperial(row.measure)}
                   </span>
                 </li>
               );
@@ -230,7 +274,9 @@ export default function RecipeDetail({
                     <span className={`step-number ${done ? 'done' : ''}`}>
                       {i + 1}
                     </span>
-                    <span className="step-text">{text}</span>
+                    <span className="step-text">
+                      {convertRecipeStepTextToImperial(text)}
+                    </span>
                   </button>
                 </li>
               );

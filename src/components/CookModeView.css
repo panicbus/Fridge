@@ -1,0 +1,808 @@
+.cook-mode-root {
+  position: fixed;
+  inset: 0;
+  background: #1a1815;
+  color: var(--text-cream);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  animation: cook-mode-enter 0.3s ease;
+}
+
+@keyframes cook-mode-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Top bar — title centered; controls stay right */
+.cook-mode-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 28px;
+  border-bottom: 1px solid rgba(255, 251, 243, 0.08);
+  flex-shrink: 0;
+}
+
+.cook-mode-title {
+  grid-column: 2;
+  justify-self: center;
+  max-width: min(72vw, 640px);
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 3.6vw, 1.85rem);
+  font-weight: 400;
+  line-height: 1.2;
+  color: rgba(245, 239, 228, 0.95);
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+.cook-mode-controls {
+  grid-column: 3;
+  justify-self: end;
+  display: flex;
+  gap: 8px;
+}
+
+.cook-mode-toggle-timers,
+.cook-mode-exit {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 251, 243, 0.08);
+  border: none;
+  color: var(--text-cream);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.cook-mode-toggle-timers:hover,
+.cook-mode-exit:hover {
+  background: rgba(255, 251, 243, 0.16);
+}
+
+.cook-mode-toggle-timers[data-enabled='false'] {
+  opacity: 0.4;
+}
+
+/* Stage — column fills viewport between header/footer; text area gets remaining height */
+.cook-mode-stage {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 24px max(24px, 5vw) 20px;
+  cursor: pointer;
+  text-align: center;
+  outline: none;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.cook-mode-stage:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -8px;
+  border-radius: 12px;
+}
+
+/* Step number */
+.cook-mode-step-number {
+  font-family: var(--font-body);
+  font-size: 13px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent-yellow);
+  margin-bottom: 16px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.cook-mode-step-total {
+  color: rgba(245, 200, 76, 0.5);
+  margin-left: 4px;
+}
+
+.cook-mode-step-column {
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  overflow: hidden;
+}
+
+/* Region whose height drives font scaling — paragraph must fit here */
+.cook-mode-step-text-fit {
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+  max-width: min(42em, 94vw);
+  margin-inline: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* Step text — clamp is starting point; JS may reduce font-size so full step fits */
+.cook-mode-step-text {
+  font-family: var(--font-display);
+  font-size: clamp(17px, 3.8vmin, 52px);
+  line-height: 1.28;
+  font-weight: 400;
+  color: var(--text-cream);
+  margin: 0;
+  width: 100%;
+  text-wrap: balance;
+}
+
+/* Inline ingredients */
+.cook-mode-ingredients {
+  margin-top: 0;
+  flex-shrink: 0;
+  padding: 18px 24px;
+  background: rgba(255, 251, 243, 0.06);
+  border: 1px solid rgba(255, 251, 243, 0.1);
+  border-radius: 14px;
+  display: inline-block;
+  text-align: left;
+}
+
+.cook-mode-ingredients-label {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(245, 239, 228, 0.55);
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.cook-mode-ingredients-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--font-body);
+  font-size: clamp(14px, 1.6vw, 18px);
+}
+
+.cook-mode-ingredients-list li {
+  color: var(--text-cream);
+}
+
+.cook-mode-ingredients-list .ing-measure {
+  color: var(--accent-yellow);
+  font-weight: 500;
+  margin-right: 6px;
+}
+
+/* Timer slot */
+.cook-mode-timer {
+  margin-top: 0;
+  flex-shrink: 0;
+  cursor: default;
+}
+
+/* Footer */
+.cook-mode-footer {
+  flex-shrink: 0;
+  padding: 20px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-top: 1px solid rgba(255, 251, 243, 0.08);
+}
+
+.cook-mode-progress {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cook-mode-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 251, 243, 0.18);
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+
+.cook-mode-dot.done {
+  background: var(--accent-yellow);
+}
+
+.cook-mode-dot.current {
+  background: var(--text-cream);
+  transform: scale(1.5);
+}
+
+.cook-mode-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  max-width: 700px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.cook-mode-nav-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 52px;
+  padding: 14px 18px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.cook-mode-nav-prev {
+  background: transparent;
+  border: 1.5px solid rgba(255, 251, 243, 0.2);
+  color: rgba(245, 239, 228, 0.8);
+}
+
+.cook-mode-nav-prev:hover:not(:disabled) {
+  border-color: rgba(255, 251, 243, 0.4);
+  color: var(--text-cream);
+}
+
+.cook-mode-nav-prev:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.cook-mode-nav-next {
+  background: var(--accent);
+  border: none;
+  color: var(--text-cream);
+}
+
+.cook-mode-nav-next:hover {
+  background: #a73921;
+}
+
+/* Celebration screen */
+.cook-mode-finished {
+  justify-content: center;
+  align-items: center;
+}
+
+.cook-mode-celebration {
+  text-align: center;
+  position: relative;
+  padding: 40px;
+}
+
+.cook-mode-celebration-burst {
+  position: absolute;
+  inset: -25% -10%;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 0;
+}
+
+.cook-mode-celebration-piece {
+  position: absolute;
+  left: 50%;
+  top: 22%;
+  width: clamp(26px, 4.5vw, 36px);
+  height: clamp(26px, 4.5vw, 36px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  --burst-upkick: 135px;
+  --burst-delay: 0s;
+}
+
+.cook-mode-celebration-piece.cook-mode-celebration-fade-0 {
+  animation:
+    celebration-confetti-motion 3s linear var(--burst-delay) forwards,
+    celebration-piece-fade-0 3s linear var(--burst-delay) forwards;
+}
+
+.cook-mode-celebration-piece.cook-mode-celebration-fade-1 {
+  animation:
+    celebration-confetti-motion 3s linear var(--burst-delay) forwards,
+    celebration-piece-fade-1 3s linear var(--burst-delay) forwards;
+}
+
+.cook-mode-celebration-piece.cook-mode-celebration-fade-2 {
+  animation:
+    celebration-confetti-motion 3s linear var(--burst-delay) forwards,
+    celebration-piece-fade-2 3s linear var(--burst-delay) forwards;
+}
+
+.cook-mode-celebration-piece.cook-mode-celebration-fade-3 {
+  animation:
+    celebration-confetti-motion 3s linear var(--burst-delay) forwards,
+    celebration-piece-fade-3 3s linear var(--burst-delay) forwards;
+}
+
+.cook-mode-celebration-piece.cook-mode-celebration-fade-4 {
+  animation:
+    celebration-confetti-motion 3s linear var(--burst-delay) forwards,
+    celebration-piece-fade-4 3s linear var(--burst-delay) forwards;
+}
+
+.cook-mode-celebration-piece.cook-mode-celebration-fade-5 {
+  animation:
+    celebration-confetti-motion 3s linear var(--burst-delay) forwards,
+    celebration-piece-fade-5 3s linear var(--burst-delay) forwards;
+}
+
+.cook-mode-celebration-piece.cook-mode-celebration-fade-6 {
+  animation:
+    celebration-confetti-motion 3s linear var(--burst-delay) forwards,
+    celebration-piece-fade-6 3s linear var(--burst-delay) forwards;
+}
+
+.cook-mode-celebration-piece.cook-mode-celebration-fade-7 {
+  animation:
+    celebration-confetti-motion 3s linear var(--burst-delay) forwards,
+    celebration-piece-fade-7 3s linear var(--burst-delay) forwards;
+}
+
+.cook-mode-celebration-piece.cook-mode-celebration-fade-8 {
+  animation:
+    celebration-confetti-motion 3s linear var(--burst-delay) forwards,
+    celebration-piece-fade-8 3s linear var(--burst-delay) forwards;
+}
+
+.cook-mode-celebration-piece.cook-mode-celebration-fade-9 {
+  animation:
+    celebration-confetti-motion 3s linear var(--burst-delay) forwards,
+    celebration-piece-fade-9 3s linear var(--burst-delay) forwards;
+}
+
+.cook-mode-celebration-piece.cook-mode-celebration-fade-10 {
+  animation:
+    celebration-confetti-motion 3s linear var(--burst-delay) forwards,
+    celebration-piece-fade-10 3s linear var(--burst-delay) forwards;
+}
+
+.cook-mode-celebration-piece--warm {
+  color: var(--accent);
+}
+
+.cook-mode-celebration-piece--gold {
+  color: var(--accent-yellow);
+}
+
+.cook-mode-celebration-piece svg {
+  width: 100%;
+  height: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cook-mode-celebration-piece.cook-mode-celebration-fade-0,
+  .cook-mode-celebration-piece.cook-mode-celebration-fade-1,
+  .cook-mode-celebration-piece.cook-mode-celebration-fade-2,
+  .cook-mode-celebration-piece.cook-mode-celebration-fade-3,
+  .cook-mode-celebration-piece.cook-mode-celebration-fade-4,
+  .cook-mode-celebration-piece.cook-mode-celebration-fade-5,
+  .cook-mode-celebration-piece.cook-mode-celebration-fade-6,
+  .cook-mode-celebration-piece.cook-mode-celebration-fade-7,
+  .cook-mode-celebration-piece.cook-mode-celebration-fade-8,
+  .cook-mode-celebration-piece.cook-mode-celebration-fade-9,
+  .cook-mode-celebration-piece.cook-mode-celebration-fade-10 {
+    animation: celebration-burst-fly-static 0.01s forwards;
+    opacity: 0;
+  }
+}
+
+/*
+ * Ballistic arc through full timeline: y = upkick*(u² - u) + Dy*u² (smooth landing at 100%).
+ * x = Dx*u. No mid-air hold — motion and fade stay in sync at 3s.
+ */
+@keyframes celebration-confetti-motion {
+  0%,
+  3% {
+    transform: translate(-50%, -50%) translate(0, 0) rotate(0deg) scale(1);
+  }
+  8% {
+    transform: translate(-50%, -50%)
+      translate(
+        calc(var(--burst-dx) * 0.055),
+        calc(var(--burst-upkick) * -0.051975 + var(--burst-dy) * 0.003025)
+      )
+      rotate(calc(var(--burst-rot) * 0.055)) scale(1);
+  }
+  16% {
+    transform: translate(-50%, -50%)
+      translate(
+        calc(var(--burst-dx) * 0.144),
+        calc(var(--burst-upkick) * -0.123264 + var(--burst-dy) * 0.020736)
+      )
+      rotate(calc(var(--burst-rot) * 0.144)) scale(1);
+  }
+  28% {
+    transform: translate(-50%, -50%)
+      translate(
+        calc(var(--burst-dx) * 0.277),
+        calc(var(--burst-upkick) * -0.200271 + var(--burst-dy) * 0.076729)
+      )
+      rotate(calc(var(--burst-rot) * 0.277)) scale(1);
+  }
+  42% {
+    transform: translate(-50%, -50%)
+      translate(
+        calc(var(--burst-dx) * 0.433),
+        calc(var(--burst-upkick) * -0.245511 + var(--burst-dy) * 0.187489)
+      )
+      rotate(calc(var(--burst-rot) * 0.433)) scale(1);
+  }
+  58% {
+    transform: translate(-50%, -50%)
+      translate(
+        calc(var(--burst-dx) * 0.611),
+        calc(var(--burst-upkick) * -0.237679 + var(--burst-dy) * 0.373321)
+      )
+      rotate(calc(var(--burst-rot) * 0.611)) scale(1);
+  }
+  74% {
+    transform: translate(-50%, -50%)
+      translate(
+        calc(var(--burst-dx) * 0.788),
+        calc(var(--burst-upkick) * -0.167056 + var(--burst-dy) * 0.620944)
+      )
+      rotate(calc(var(--burst-rot) * 0.788)) scale(1);
+  }
+  88% {
+    transform: translate(-50%, -50%)
+      translate(
+        calc(var(--burst-dx) * 0.944),
+        calc(var(--burst-upkick) * -0.052864 + var(--burst-dy) * 0.891136)
+      )
+      rotate(calc(var(--burst-rot) * 0.944)) scale(1);
+  }
+  100% {
+    transform: translate(-50%, -50%) translate(var(--burst-dx), var(--burst-dy))
+      rotate(var(--burst-rot)) scale(1);
+  }
+}
+
+/*
+ * Monotonic fades only (no bounce/flicker). Staggered decay start ~77–90% for uneven timing.
+ */
+@keyframes celebration-piece-fade-0 {
+  0%,
+  2% {
+    opacity: 0;
+  }
+  3%,
+  82% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 0.42;
+  }
+  94% {
+    opacity: 0.12;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes celebration-piece-fade-1 {
+  0%,
+  2% {
+    opacity: 0;
+  }
+  3%,
+  86% {
+    opacity: 1;
+  }
+  91% {
+    opacity: 0.58;
+  }
+  96% {
+    opacity: 0.14;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes celebration-piece-fade-2 {
+  0%,
+  2% {
+    opacity: 0;
+  }
+  3%,
+  79% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 0.52;
+  }
+  92% {
+    opacity: 0.15;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes celebration-piece-fade-3 {
+  0%,
+  2% {
+    opacity: 0;
+  }
+  3%,
+  84% {
+    opacity: 1;
+  }
+  89% {
+    opacity: 0.68;
+  }
+  95% {
+    opacity: 0.22;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes celebration-piece-fade-4 {
+  0%,
+  2% {
+    opacity: 0;
+  }
+  3%,
+  88% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 0.48;
+  }
+  97% {
+    opacity: 0.1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes celebration-piece-fade-5 {
+  0%,
+  2% {
+    opacity: 0;
+  }
+  3%,
+  81% {
+    opacity: 1;
+  }
+  87% {
+    opacity: 0.55;
+  }
+  93% {
+    opacity: 0.18;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes celebration-piece-fade-6 {
+  0%,
+  2% {
+    opacity: 0;
+  }
+  3%,
+  85% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.62;
+  }
+  96% {
+    opacity: 0.12;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes celebration-piece-fade-7 {
+  0%,
+  2% {
+    opacity: 0;
+  }
+  3%,
+  77% {
+    opacity: 1;
+  }
+  83% {
+    opacity: 0.5;
+  }
+  90% {
+    opacity: 0.14;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes celebration-piece-fade-8 {
+  0%,
+  2% {
+    opacity: 0;
+  }
+  3%,
+  90% {
+    opacity: 1;
+  }
+  94% {
+    opacity: 0.45;
+  }
+  98% {
+    opacity: 0.08;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes celebration-piece-fade-9 {
+  0%,
+  2% {
+    opacity: 0;
+  }
+  3%,
+  83% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 0.72;
+  }
+  94% {
+    opacity: 0.24;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes celebration-piece-fade-10 {
+  0%,
+  2% {
+    opacity: 0;
+  }
+  3%,
+  87% {
+    opacity: 1;
+  }
+  91% {
+    opacity: 0.38;
+  }
+  95% {
+    opacity: 0.14;
+  }
+  99% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes celebration-burst-fly-static {
+  to {
+    opacity: 0;
+  }
+}
+
+.cook-mode-celebration-heading {
+  font-family: var(--font-display);
+  font-size: clamp(60px, 10vw, 120px);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+  text-shadow:
+    0 0 48px rgba(193, 67, 42, 0.35),
+    0 2px 0 rgba(26, 24, 21, 0.4);
+  animation: celebration-fade-in 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.cook-mode-celebration-recipe {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: rgba(245, 239, 228, 0.55);
+  margin-bottom: 32px;
+  font-style: italic;
+  position: relative;
+  z-index: 1;
+  animation: celebration-fade-in 0.8s 0.15s both ease-out;
+}
+
+.cook-mode-celebration-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.cook-mode-celebration-cta {
+  padding: 14px 32px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  background: transparent;
+  border: 1.5px solid rgba(255, 251, 243, 0.3);
+  color: var(--text-cream);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s;
+  animation: celebration-fade-in 0.8s 0.3s both ease-out;
+}
+
+.cook-mode-celebration-cta:hover {
+  border-color: var(--accent-yellow);
+  color: var(--accent-yellow);
+}
+
+.cook-mode-celebration-cta-home {
+  padding: 6px 8px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: rgba(245, 239, 228, 0.42);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s;
+  animation: celebration-fade-in 0.8s 0.38s both ease-out;
+}
+
+.cook-mode-celebration-cta-home:hover {
+  color: var(--accent-yellow);
+}
+
+@keyframes celebration-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -69,24 +69,6 @@
   white-space: nowrap;
 }
 
-.history-vegan-filter-select {
-  width: 108px;
-  height: 34px;
-  padding: 0 12px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: var(--bg-card);
-  font-family: var(--font-body);
-  font-size: 13px;
-  color: var(--text-primary);
-  cursor: pointer;
-}
-
-.history-vegan-filter-select:focus {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
 .history-view-body {
   flex: 1;
   min-height: 0;

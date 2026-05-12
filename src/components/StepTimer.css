@@ -1,0 +1,58 @@
+.step-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.step-timer.idle {
+  background: rgba(255, 251, 243, 0.12);
+  border: 1px solid rgba(255, 251, 243, 0.25);
+  color: var(--text-cream);
+}
+
+.step-timer.idle:hover {
+  background: rgba(255, 251, 243, 0.18);
+  border-color: rgba(255, 251, 243, 0.4);
+}
+
+.step-timer.running {
+  background: var(--accent-yellow);
+  color: #3a2810;
+  border: none;
+}
+
+.step-timer.paused {
+  background: rgba(245, 200, 76, 0.4);
+  color: var(--text-cream);
+  border: 1px solid var(--accent-yellow);
+}
+
+.step-timer.done {
+  background: #6ba872;
+  color: #f5efe4;
+  border: none;
+  animation: timer-pulse 1.5s ease infinite;
+}
+
+@keyframes timer-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(107, 168, 114, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(107, 168, 114, 0);
+  }
+}
+
+.step-timer-icon {
+  display: inline-flex;
+  align-items: center;
+}

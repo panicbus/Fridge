@@ -71,28 +71,54 @@
   border-color: transparent;
 }
 
-.cook-mode-btn {
-  padding: 8px 16px;
-  font-size: 13px;
-  color: var(--text-secondary);
-  border: 1.5px solid var(--border-hover);
-  border-radius: 20px;
+.start-cooking-wrap {
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0 28px;
 }
 
-.cook-mode-btn:hover {
-  color: var(--accent);
-  background: var(--accent-bg);
-  border-color: transparent;
+.start-cooking-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 24px auto 8px;
+  padding: 14px 28px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--text-cream);
+  background: var(--accent);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    transform 0.15s,
+    background 0.15s,
+    box-shadow 0.15s;
+  box-shadow: 0 4px 14px rgba(193, 67, 42, 0.18);
 }
 
-.cook-mode-btn.active {
-  color: var(--accent);
-  background: var(--accent-bg);
-  border-color: var(--accent-dim);
+.start-cooking-btn:hover {
+  background: #a73921;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(193, 67, 42, 0.25);
 }
 
-.cook-mode-btn.active:hover {
-  border-color: transparent;
+.start-cooking-btn:active {
+  transform: translateY(0);
+}
+
+.start-cooking-btn:focus-visible {
+  outline: 2px solid var(--accent-dim);
+  outline-offset: 3px;
+}
+
+.start-cooking-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .detail-hero {
@@ -144,9 +170,24 @@
   border-radius: var(--radius-sm);
 }
 
-.hero-area {
-  font-size: 13px;
+.hero-area-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   color: var(--text-secondary);
+  background: rgba(255, 251, 243, 0.85);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+}
+
+.hero-area-flag {
+  font-size: 14px;
+  line-height: 1;
 }
 
 .hero-diet-badge {
@@ -192,10 +233,6 @@
   font-weight: 400;
   line-height: 1.15;
   color: var(--text-primary);
-}
-
-.recipe-detail.cook-mode .hero-title {
-  font-size: 28px;
 }
 
 .hero-tags {
@@ -249,10 +286,6 @@
   flex: 1;
   min-height: 0;
   padding: 28px 0 40px;
-}
-
-.recipe-detail.cook-mode .detail-body {
-  grid-template-columns: 240px 1fr;
 }
 
 .detail-section-title {
@@ -436,11 +469,3 @@
   padding-top: 3px;
 }
 
-.recipe-detail.cook-mode .step-item {
-  padding: 20px 16px;
-}
-
-.recipe-detail.cook-mode .step-text {
-  font-size: 19px;
-  line-height: 1.7;
-}
