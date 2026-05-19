@@ -1,0 +1,71 @@
+.recipe-thumb-fallback {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.recipe-thumb-fallback::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 85% 65% at 28% 22%,
+    rgba(255, 252, 247, 0.22),
+    transparent 58%
+  );
+  pointer-events: none;
+}
+
+.recipe-thumb-fallback::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.12;
+  background-image: url('../assets/fridge-watermark-tile.svg');
+  /* Larger tile than icon bounds → fewer repeats, less “busy” grid */
+  background-size: 96px 116px;
+  background-repeat: repeat;
+  background-position: 22% 18%;
+  pointer-events: none;
+}
+
+.recipe-thumb-fallback__initials {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: rgba(255, 248, 240, 0.94);
+  text-shadow:
+    0 1px 2px rgba(26, 24, 21, 0.35),
+    0 0 24px rgba(26, 24, 21, 0.15);
+  line-height: 1;
+  user-select: none;
+}
+
+.recipe-thumb-fallback--card .recipe-thumb-fallback__initials {
+  font-size: clamp(1.65rem, 9vmin, 2.85rem);
+}
+
+.recipe-thumb-fallback--row .recipe-thumb-fallback__initials {
+  font-size: clamp(0.72rem, 42%, 1.05rem);
+}
+
+.recipe-thumb-fallback--compact .recipe-thumb-fallback__initials {
+  font-size: clamp(0.62rem, 38%, 0.82rem);
+}
+
+.recipe-thumb-fallback--hero .recipe-thumb-fallback__initials {
+  font-size: clamp(2.75rem, 14vmin, 4.25rem);
+}
+
+.recipe-thumb-fallback--hero::after {
+  opacity: 0.085;
+  background-size: 148px 179px;
+  background-position: 30% 22%;
+}

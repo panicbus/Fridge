@@ -7,9 +7,16 @@ files:
   - dist/**/*
   - dist-electron/**/*
   - package.json
+  - node_modules/sql.js/**/*
+asarUnpack:
+  - node_modules/sql.js/dist/**
 extraResources:
   - from: build
     to: build
+  - from: assets/recipes.db
+    to: assets/recipes.db
+  - from: assets/recipe-images
+    to: assets/recipe-images
 mac:
   icon: build/icon.icns
   category: public.app-category.food-and-drink

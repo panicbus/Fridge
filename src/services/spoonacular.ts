@@ -2,6 +2,7 @@ import axios, { isAxiosError } from 'axios';
 import type { RecipeMatch, UnifiedRecipe } from '../types';
 import { normalizeInstructionSteps } from '../utils/instructionSteps';
 import { dedupeRecipeTags } from '../utils/recipeTags';
+import { inferDietFlags } from './mealdb';
 
 const BASE = 'https://api.spoonacular.com';
 
@@ -172,6 +173,23 @@ function mapInfoToUnified(
     measure: ext.original ?? '',
   }));
 
+  const inferred = inferDietFlags(
+    ingredients.map((i) => ({
+      name: i.name,
+      measure: i.measure,
+    })),
+    info.title,
+  );
+
+  let vegan = info.vegan;
+  let vegetarian = info.vegetarian;
+  if (!inferred.vegetarian) {
+    vegetarian = false;
+    vegan = false;
+  } else if (!inferred.vegan) {
+    vegan = false;
+  }
+
   return {
     id: `spn-${info.id}`,
     source: 'spoonacular',
@@ -187,8 +205,8 @@ function mapInfoToUnified(
     youtubeUrl: undefined,
     readyInMinutes: info.readyInMinutes,
     servings: info.servings,
-    vegan: info.vegan,
-    vegetarian: info.vegetarian,
+    vegan,
+    vegetarian,
     glutenFree: info.glutenFree,
     dairyFree: info.dairyFree,
   };

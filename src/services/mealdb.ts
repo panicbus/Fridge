@@ -46,21 +46,72 @@ export interface ExtractedIngredient {
   measure: string;
 }
 
-/** Pure inference from ingredient name strings; defaults true unless a trigger matches. */
-export function inferDietFlags(ingredientNames: string[]): {
+/** Strings or name/measure pairs — measure often carries meat wording Spoonacular strips from `name`. */
+export type DietInferBlobPart =
+  | string
+  | { name: string; measure?: string | null };
+
+function flattenDietBlobParts(parts: DietInferBlobPart[]): string[] {
+  const chunks: string[] = [];
+  for (const p of parts) {
+    if (typeof p === 'string') {
+      const s = p.toLowerCase().trim();
+      if (s) chunks.push(s);
+    } else {
+      const n = p.name.toLowerCase().trim();
+      if (n) chunks.push(n);
+      const m = typeof p.measure === 'string' ? p.measure.toLowerCase().trim() : '';
+      if (m) chunks.push(m);
+    }
+  }
+  return chunks;
+}
+
+/** Pure inference from ingredient strings/lines and optional recipe title. */
+export function inferDietFlags(
+  ingredients: DietInferBlobPart[],
+  title?: string | null,
+): {
   vegan: boolean;
   vegetarian: boolean;
   glutenFree: boolean;
   dairyFree: boolean;
 } {
-  const blob = ingredientNames.map((n) => n.toLowerCase()).join(' ');
+  const chunks = flattenDietBlobParts(ingredients);
+  if (title?.trim()) chunks.push(title.toLowerCase());
+  const blob = chunks.join(' ');
 
+  // Breadth matters more than rare edge cases (e.g. vegan hot dogs): processed meats,
+  // deli cuts, and grinds often omit words like "beef" / "pork" on Spoonacular names.
   const meatFish =
-    /\b(beef|chicken|pork|lamb|fish|shrimp|prawn|salmon|tuna|bacon|ham|sausage|turkey|duck|goat|veal|anchovy|crab|lobster|oyster|mussel|clam|octopus|squid|gelatin|lard)\b/i;
+    /\b(?:beef|steaks?|ground\s+beef|(?:ground|minced)\s+(?:beef|round|chuck|sirloin|pork|lamb|turkey|chicken|veal|bison|venison)|chickens?|hen|hens|poultry|pork|bacon|ham|sausages?|bratwurst|salami|pepperoni|prosciutto|chorizo|pastrami|frankfurters?|hot\s*dogs?|wieners?|weenies|franks?|knockwurst|bockwurst|kie(?:l|ł)basas?|polish\s+sausage|andouille|linguicas?|bologna|mortadella|capocollo|capicola|soppressata|spam|corned\s+beef|beef\s+jerky|jerky|pulled\s+pork|pulled\s+chicken|prime\s+rib|baby\s+back\s+ribs?|spareribs|spare[-\s]ribs?|short\s+ribs?|lamb|veal|mutton|turkeys?|duck|duckling|ducks?|goose|geese|rabbit|venison|bison|frog\s+legs?|snails?|escargot|fish|salmon|tuna|cod|halibut|trout|tilapia|bass|perch|sardines?|anchovies?|herring|mackerel|swordfish|catfish|eel|shrimp|shrimps|prawns?|scallops?|crabs?|lobsters?|crawfish|crayfish|oysters?|mussels?|clams?|squid|calamari|octopus|gelatin|lard)\b/i;
+
+  /** Roasts, compound cuts, charcuterie, offal, game — separated for readability. */
+  const meatFishExtra =
+    /\b(?:st\.?\s+louis\s+ribs?|country\s+style\s+ribs|back\s+ribs|side\s+ribs|rib\s+tips|chuck\s+roast|chuck\s+steak|pot\s+roast|standing\s+rib|ribeye|rib\s+eyes?|delmonico|cowboy\s+steak|tomahawk|t[- ]bone|porterhouse|tri[- ]tip|flank\s+steak|skirt\s+steak|hanger\s+steak|flat\s+iron|denver\s+steak|sirloin\s+tip|sirloin\s+roast|rump\s+roast|eye\s+of\s+round|bottom\s+round|top\s+round|beef\s+tenderloin|pork\s+tenderloin|pork\s+belly|pork\s+butt|pork\s+shoulder|pork\s+loin|pork\s+chops?|pork\s+rinds?|lamb\s+chops?|lamb\s+rack|lamb\s+shank|lamb\s+leg|veal\s+chops?|veal\s+cutlet|veal\s+scaloppini|oxtails?|sweetbreads?|tripe|(?:beef|veal|lamb|pork)\s+kidneys?|(?:beef|veal|lamb)\s+liver|(?:chicken|duck|goose|turkey)\s+livers?|chicken\s+gizzards?|chicken\s+hearts?|duck\s+confit|beef\s+tongue|lamb\s+tongue|bone\s+marrow|head\s+cheese|scrapple|blood\s+sausage|moronga|pheasant|partridge|grouse|woodcock|quail|squab|cornish\s+game\s+hens?|guinea\s+fowl|capons?|elk|moose|caribou|wild\s+boar|antelope|ostrich|emu|alligator|crocodile|snapping\s+turtle|foie\s+gras|guanciale|pancetta|nduja|speck|cotechino|liverwurst)\b/i;
+
+  const meatBroth =
+    /\b(?:chicken|beef|turkey|fish|veal|lamb)\s+(?:broth|stock|bouillon)\b/i;
+  const fishSauce = /\bfish\s+sauce\b/i;
+
+  // Standalone "meat" / "ground meat" catches marinades & titles when cuts aren't listed,
+  // but skip obvious plant/replica phrases ("coconut meat", "Beyond Meat", etc.).
+  const plantOrReplicaMeatPhrase =
+    /\b(?:coconut|jackfruit|almond|cashew|walnut|pecan|nut|mock|imitation|plant(?:y|-based)?|plant[- ]based|soy|tvp|textured\s+vegetable|meatless|vegan|vegetarian|beyond|impossible)\s+meat\b/i;
+  const bareMeatMention =
+    /\bmeat\b/i.test(blob) && !plantOrReplicaMeatPhrase.test(blob);
+
+  const hasAnimalFlesh =
+    meatFish.test(blob) ||
+    meatFishExtra.test(blob) ||
+    meatBroth.test(blob) ||
+    fishSauce.test(blob) ||
+    bareMeatMention;
+
   const dairyEggs =
     /\b(milk|butter|cheese|cream|yogurt|yoghurt|egg|eggs|honey|whey|casein)\b/i;
 
-  const vegetarian = !meatFish.test(blob);
+  const vegetarian = !hasAnimalFlesh;
   const vegan = vegetarian && !dairyEggs.test(blob);
 
   let glutenFree = true;
@@ -101,13 +152,25 @@ export function extractIngredients(meal: Meal): ExtractedIngredient[] {
 
 export function mapMealToUnifiedRecipe(meal: Meal): UnifiedRecipe {
   const rows = extractIngredients(meal);
-  const names = rows.map((r) => r.name);
-  let flags = inferDietFlags(names);
+  const inferred = inferDietFlags(
+    rows.map((r) => ({ name: r.name, measure: r.measure })),
+    meal.strMeal,
+  );
   const cat = (meal.strCategory ?? '').trim().toLowerCase();
+
+  let vegan = inferred.vegan;
+  let vegetarian = inferred.vegetarian;
   if (cat === 'vegan') {
-    flags = { ...flags, vegan: true, vegetarian: true };
+    vegan = true;
+    vegetarian = true;
   } else if (cat === 'vegetarian') {
-    flags = { ...flags, vegetarian: true };
+    vegetarian = true;
+  }
+  if (!inferred.vegetarian) {
+    vegetarian = false;
+    vegan = false;
+  } else if (!inferred.vegan) {
+    vegan = false;
   }
 
   const rawTags: string[] = [];
@@ -140,10 +203,10 @@ export function mapMealToUnifiedRecipe(meal: Meal): UnifiedRecipe {
     youtubeUrl: meal.strYoutube ?? undefined,
     readyInMinutes: undefined,
     servings: undefined,
-    vegan: flags.vegan,
-    vegetarian: flags.vegetarian,
-    glutenFree: flags.glutenFree,
-    dairyFree: flags.dairyFree,
+    vegan,
+    vegetarian,
+    glutenFree: inferred.glutenFree,
+    dairyFree: inferred.dairyFree,
   };
 }
 

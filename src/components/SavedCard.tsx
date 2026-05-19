@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import CachedMealImage from './CachedMealImage';
+import RecipeThumbFallback from './RecipeThumbFallback';
 import { useStore } from '../hooks/useStore';
 import { recipeCardImageSrc } from '../services/mealdb';
 import { savedRecipesStore } from '../services/savedRecipes';
@@ -9,14 +10,6 @@ export interface SavedCardProps {
   onViewAll: () => void;
   onSelectRecipe: (recipeId: string) => void;
 }
-
-const FALLBACK_GRADIENTS = [
-  'linear-gradient(135deg, #c97a4a 0%, #8a4a28 100%)',
-  'linear-gradient(135deg, #6a8a4a 0%, #3a5a28 100%)',
-  'linear-gradient(135deg, #d9a040 0%, #a06820 100%)',
-  'linear-gradient(135deg, #b04a3a 0%, #6a2818 100%)',
-  'linear-gradient(135deg, #8a6a4a 0%, #5a3a20 100%)',
-] as const;
 
 function metaParts(category?: string, readyInMinutes?: number): string[] {
   const parts: string[] = [];
@@ -89,12 +82,11 @@ export default function SavedCard({
                         className="saved-card-thumb"
                       />
                     ) : (
-                      <div
-                        className="saved-card-thumb saved-card-thumb--fallback"
-                        style={{
-                          background:
-                            FALLBACK_GRADIENTS[index % FALLBACK_GRADIENTS.length],
-                        }}
+                      <RecipeThumbFallback
+                        seed={recipe.id}
+                        title={recipe.title}
+                        density="compact"
+                        className="saved-card-thumb"
                       />
                     )}
                     <div className="saved-card-text-col">

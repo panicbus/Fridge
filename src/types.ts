@@ -8,7 +8,7 @@ export type AppView =
   | 'pantry-manage'
   | 'cook-mode';
 
-export type RecipeSource = 'spoonacular' | 'mealdb';
+export type RecipeSource = 'spoonacular' | 'mealdb' | 'local';
 
 export interface UnifiedRecipe {
   id: string;

@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import CachedMealImage from './CachedMealImage';
+import RecipeThumbFallback from './RecipeThumbFallback';
 import SaveButton from './SaveButton';
 import type { RecipeMatch } from '../types';
 import { recipeHeroImageSrc } from '../services/mealdb';
@@ -43,6 +44,7 @@ export default function RecipeDetail({
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(
     () => new Set(),
   );
+  const [heroFailed, setHeroFailed] = useState(false);
 
   const normalizedUser = useMemo(
     () =>
@@ -68,6 +70,7 @@ export default function RecipeDetail({
   const progressPct =
     totalSteps > 0 ? (doneCount / totalSteps) * 100 : 0;
   const heroSrc = recipeHeroImageSrc(recipe);
+  const showHeroImage = Boolean(heroSrc) && !heroFailed;
 
   const showVeganAdvisory =
     rankingMode !== 'show-all' && !recipe.vegan;
@@ -95,14 +98,24 @@ export default function RecipeDetail({
       </header>
 
       <section className="detail-hero">
-        {heroSrc && (
-          <CachedMealImage
-            src={heroSrc}
-            alt=""
-            decoding="async"
-            className="hero-image"
-          />
-        )}
+        <div className="hero-backdrop" aria-hidden>
+          {showHeroImage ? (
+            <CachedMealImage
+              src={heroSrc!}
+              alt=""
+              decoding="async"
+              className="hero-image"
+              onError={() => setHeroFailed(true)}
+            />
+          ) : (
+            <RecipeThumbFallback
+              seed={recipe.id}
+              title={recipe.title}
+              density="hero"
+              className="hero-fallback-fill"
+            />
+          )}
+        </div>
         <div className="hero-overlay">
           <div className="hero-meta">
             {recipe.category && (

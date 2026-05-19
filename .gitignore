@@ -5,3 +5,11 @@ release
 *.log
 .DS_Store
 .env
+
+# Bundled local recipe trove (generate via scripts/prep-recipes before packaging)
+assets/recipes.db
+assets/recipe-images/
+
+# Prep pipeline artifacts — download CSV locally; see scripts/prep-recipes/README.md
+scripts/prep-recipes/raw/*.csv
+scripts/prep-recipes/filtered.jsonl

@@ -20,6 +20,7 @@ import {
   dedupeIngredientNames,
   ingredientDedupeKey,
 } from '../utils/ingredientDedupe';
+import { normalizeIngredientForSearch } from '../utils/searchIngredients';
 
 const RANKING_STORAGE_KEY = 'fridge.dietPreference';
 
@@ -157,10 +158,17 @@ export function useFridgeAppState(): FridgeAppState {
       setLoading(true);
       setSpoonacularNotice(null);
       try {
-        bumpUsage(ings.map((x) => x.trim().toLowerCase()));
+        const queryIngs = dedupeIngredientNames(
+          ings
+            .map((x) => normalizeIngredientForSearch(x))
+            .filter(Boolean),
+        );
+        if (queryIngs.length === 0) return;
+
+        bumpUsage(queryIngs.map((x) => x.trim().toLowerCase()));
         bumpPantryRevision();
         const prefs = rankingModeToPreferences(mode);
-        const list = await findRecipes(ings, prefs);
+        const list = await findRecipes(queryIngs, prefs);
         recordSearch({
           ingredients: ings,
           dietPreference: mode,

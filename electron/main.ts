@@ -1,6 +1,10 @@
 import { app, BrowserWindow, nativeImage, shell } from 'electron';
 import * as path from 'path';
 import { registerMealImageCacheHandlers } from './imageCache';
+import {
+  closeLocalRecipesDb,
+  registerLocalRecipesHandlers,
+} from './localRecipesHandlers';
 
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
 
@@ -76,6 +80,7 @@ function createWindow(): void {
 
 void app.whenReady().then(() => {
   registerMealImageCacheHandlers();
+  registerLocalRecipesHandlers();
   if (process.platform === 'darwin') {
     const dockIcon = loadDockIcon();
     if (dockIcon) {
@@ -84,6 +89,10 @@ void app.whenReady().then(() => {
   }
   createWindow();
 });
+app.on('before-quit', () => {
+  closeLocalRecipesDb();
+});
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });

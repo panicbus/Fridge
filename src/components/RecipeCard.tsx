@@ -1,4 +1,6 @@
+import React, { useState } from 'react';
 import CachedMealImage from './CachedMealImage';
+import RecipeThumbFallback from './RecipeThumbFallback';
 import SaveButton from './SaveButton';
 import { recipeCardImageSrc } from '../services/mealdb';
 import type { RecipeMatch } from '../types';
@@ -20,6 +22,7 @@ export default function RecipeCard({
 }: RecipeCardProps) {
   const { recipe, matchedIngredients, missingIngredients, matchScore } = match;
   const pct = Math.round(matchScore * 100);
+  const [thumbFailed, setThumbFailed] = useState(false);
 
   const haveShow = matchedIngredients.slice(0, 4);
   const missShow = missingIngredients.slice(0, 3);
@@ -27,6 +30,7 @@ export default function RecipeCard({
     matchedIngredients.length + missingIngredients.length;
   const overflow = totalBadges > 7 ? totalBadges - 7 : 0;
   const thumbSrc = recipeCardImageSrc(recipe);
+  const showThumbImage = Boolean(thumbSrc) && !thumbFailed;
 
   const metaLine = [recipe.area, recipe.category].filter(Boolean).join(' · ');
 
@@ -45,16 +49,22 @@ export default function RecipeCard({
       }}
     >
       <div className="recipe-thumb">
-        {thumbSrc ? (
+        {showThumbImage ? (
           <CachedMealImage
-            src={thumbSrc}
+            src={thumbSrc!}
             alt=""
             loading="lazy"
             decoding="async"
             className="recipe-thumb-img"
+            onError={() => setThumbFailed(true)}
           />
         ) : (
-          <div className="recipe-thumb-placeholder" />
+          <RecipeThumbFallback
+            seed={recipe.id}
+            title={recipe.title}
+            density="card"
+            className="recipe-thumb-img"
+          />
         )}
         <div className="recipe-save-slot">
           <SaveButton recipe={recipe} size="sm" variant="overlay" />

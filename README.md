@@ -4,8 +4,9 @@ Desktop recipe discovery (Electron + React + Vite). Enter ingredients you have; 
 
 ## API Keys
 
-This app uses two recipe sources:
+This app uses three recipe sources:
 
+- **Local trove** — bundled SQLite (~10k curated weeknight-friendly recipes derived from [RecipeNLG](https://recipenlg.cs.put.poznan.pl/), built offline via `scripts/prep-recipes`; see [Local recipe trove](#local-recipe-trove).
 - **TheMealDB** — free, no key needed, ~600 recipes
 - **Spoonacular** — free tier (150 requests/day), 300,000+ recipes — recommended
 
@@ -27,7 +28,7 @@ The app works without Spoonacular but with a much smaller recipe pool.
 
 The app defaults to **Vegan-first**: vegan recipes appear at the top, with non-vegan results below. Toggle to **Vegetarian-friendly** to also boost vegetarian recipes, or **Show all** for pure match-quality ranking. This choice is saved in `localStorage` under `fridge.dietPreference`.
 
-Spoonacular provides authoritative diet flags. For TheMealDB recipes, vegan/vegetarian/GF/dairy-free status is inferred from the ingredient list — the inference is conservative (errs toward marking recipes as non-vegan) but not 100% accurate.
+Spoonacular provides authoritative diet flags. For TheMealDB and **local trove** recipes, vegan/vegetarian/GF/dairy-free status is inferred from the ingredient list — the inference is conservative (errs toward marking recipes as non-vegan) but not 100% accurate.
 
 ## Scripts
 
@@ -42,7 +43,8 @@ npm run dist:mac # Packaged macOS app + dmg/zip (uses build/icon.icns)
 
 - `src/services/mealdb.ts` — TheMealDB client; `findRecipesMealDB()` for MealDB-only use
 - `src/services/spoonacular.ts` — Spoonacular client
-- `src/services/recipeOrchestrator.ts` — `findRecipes()` merges both sources, dedupes, and applies ranking
+- `src/services/localRecipes.ts` — bundled SQLite recipes (Electron IPC from main process)
+- `src/services/recipeOrchestrator.ts` — `findRecipes()` merges all sources, dedupes, and applies ranking
 
 ## Saved Recipes
 
@@ -85,6 +87,29 @@ Press **Enter cooking mode** on any recipe to enter a focused, hands-friendly co
 - A **Bon Appétit** celebration screen with a burst of utensils when you finish
 
 Timers can be toggled off via the clock icon in the top bar if you prefer to ignore them.
+
+## Local recipe trove
+
+The app can ship with a bundled SQLite database of ~10,000 curated weeknight-friendly recipes, sourced from [RecipeNLG](https://recipenlg.cs.put.poznan.pl/) (manual download of **`full_dataset.csv`**, subject to the dataset terms — the Hugging Face repo `mbien/recipe_nlg` only hosts the loader script, not the CSV). When present, it is queried alongside TheMealDB and Spoonacular for ingredient search.
+
+To build the database (one-time). Optional WebP thumbnails from recipe **source pages** usually fail for RecipeNLG (`link` rows point at old sites); the prep script **probes first** and skips a long useless crawl when none succeed. **`npm run build-data`** builds only the SQLite DB (skip image step entirely).
+
+```bash
+cd scripts/prep-recipes
+npm install
+# Download full_dataset.csv from https://recipenlg.cs.put.poznan.pl/dataset → copy to ./raw/
+npm run download   # verifies the CSV
+npm run build-data # filter → build-db (recommended)
+# optional: npm run fetch-images  # probes / may skip bulk fetch; or SKIP_IMAGE_FETCH=1 npm run all
+```
+
+Filtering requires **Python 3** (`python3`) to parse list-shaped columns in the official CSV; see `scripts/prep-recipes/README.md`.
+
+You need **`assets/recipes.db`** for local search; **`assets/recipe-images/`** is optional and is often empty—cards use placeholders. Both paths are listed as Electron **extra resources** when present. Without running prep, local search returns no results; **run at least `build-data` before `npm run dist:mac`** so `recipes.db` exists.
+
+The local source gets a small ranking boost in `recipeOrchestrator.ts` so curated matches tend to appear slightly higher while Spoonacular and MealDB still supply variety.
+
+**Electron local DB:** The app opens `recipes.db` in the main process with **sql.js** (WASM), so there is **no native SQLite addon** to rebuild for Apple Silicon vs Intel. The prep pipeline still builds **FTS5** tables for tooling consistency, but the packaged runtime searches with **token substring matching** on title and NER fields (ranked by how many ingredient tokens match). Re-run **`npm run dev`** after `npm install`; if local search is empty, confirm **`assets/recipes.db`** exists (build it under `scripts/prep-recipes`).
 
 ## Icon assets
 

@@ -9,15 +9,8 @@ import { searchHistoryStore } from '../services/searchHistory';
 import type { RecipeViewEntry, SearchHistoryEntry } from '../types';
 import { formatRelativeTime } from '../utils/relativeTime';
 import DropdownMenu from './DropdownMenu';
+import RecipeThumbFallback from './RecipeThumbFallback';
 import './HistoryView.css';
-
-const FALLBACK_GRADIENTS = [
-  'linear-gradient(135deg, #c97a4a 0%, #8a4a28 100%)',
-  'linear-gradient(135deg, #6a8a4a 0%, #3a5a28 100%)',
-  'linear-gradient(135deg, #d9a040 0%, #a06820 100%)',
-  'linear-gradient(135deg, #b04a3a 0%, #6a2818 100%)',
-  'linear-gradient(135deg, #8a6a4a 0%, #5a3a20 100%)',
-] as const;
 
 export interface HistoryViewProps {
   onBack: () => void;
@@ -240,15 +233,11 @@ export default function HistoryView({
                           className="history-recipe-thumb"
                         />
                       ) : (
-                        <div
-                          className="history-recipe-thumb history-recipe-thumb--fallback"
-                          style={{
-                            background:
-                              FALLBACK_GRADIENTS[
-                                i % FALLBACK_GRADIENTS.length
-                              ],
-                          }}
-                          aria-hidden
+                        <RecipeThumbFallback
+                          seed={entry.recipe.id}
+                          title={entry.recipe.title}
+                          density="row"
+                          className="history-recipe-thumb"
                         />
                       )}
                       <span className="history-recipe-main">
