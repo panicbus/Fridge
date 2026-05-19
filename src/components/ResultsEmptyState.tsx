@@ -1,4 +1,3 @@
-import React from 'react';
 import './ResultsEmptyState.css';
 
 export interface ResultsEmptyStateProps {

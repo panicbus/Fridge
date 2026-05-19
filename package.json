@@ -1,6 +1,6 @@
 {
   "name": "fridge",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "What's in your fridge? Get recipes.",
   "main": "dist-electron/main.js",
   "scripts": {
@@ -9,6 +9,7 @@
     "build": "tsc && vite build && npm run compile:electron",
     "dist:mac": "npm run build && electron-builder --mac",
     "preview": "vite preview",
+    "test": "vitest run",
     "electron": "npm run compile:electron && electron ."
   },
   "dependencies": {
@@ -30,6 +31,7 @@
     "electron-builder": "^24.13.3",
     "typescript": "^5.3.0",
     "vite": "^5.0.0",
+    "vitest": "^2.1.9",
     "wait-on": "^7.2.0"
   }
 }

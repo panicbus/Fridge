@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import CachedMealImage from './CachedMealImage';
 import SaveButton from './SaveButton';
 import { useStore } from '../hooks/useStore';
@@ -10,6 +10,7 @@ import type { RecipeViewEntry, SearchHistoryEntry } from '../types';
 import { formatRelativeTime } from '../utils/relativeTime';
 import DropdownMenu from './DropdownMenu';
 import RecipeThumbFallback from './RecipeThumbFallback';
+import { refreshDietFlagsAll } from '../services/refreshDietFlags';
 import './HistoryView.css';
 
 export interface HistoryViewProps {
@@ -70,6 +71,11 @@ export default function HistoryView({
   const searchRowsRaw = useStore(searchHistoryStore);
   const viewRowsRaw = useStore(recipeViewHistoryStore);
 
+  const viewRowsRefreshed = useMemo(
+    () => refreshDietFlagsAll([...viewRowsRaw]),
+    [viewRowsRaw],
+  );
+
   const searchSorted = useMemo(() => {
     const base = [...searchRowsRaw].sort((a, b) => b.timestamp - a.timestamp);
     if (!veganFirstFilterOn) return base;
@@ -77,10 +83,12 @@ export default function HistoryView({
   }, [searchRowsRaw, veganFirstFilterOn]);
 
   const viewsSorted = useMemo(() => {
-    const base = [...viewRowsRaw].sort((a, b) => b.viewedAt - a.viewedAt);
+    const base = [...viewRowsRefreshed].sort(
+      (a, b) => b.viewedAt - a.viewedAt,
+    );
     if (!veganFirstFilterOn) return base;
     return base.filter((e) => e.recipe.vegan);
-  }, [viewRowsRaw, veganFirstFilterOn]);
+  }, [viewRowsRefreshed, veganFirstFilterOn]);
 
   const searchCount = searchSorted.length;
   const viewCount = viewsSorted.length;

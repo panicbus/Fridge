@@ -1,4 +1,5 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import type { MouseEvent } from 'react';
 import { useStore } from '../hooks/useStore';
 import {
   saveRecipe,
@@ -28,7 +29,7 @@ export default function SaveButton({
   const [bouncing, setBouncing] = useState(false);
 
   const onClick = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
+    (e: MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
       e.preventDefault();
       if (saved) {

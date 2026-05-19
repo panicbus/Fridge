@@ -1,10 +1,11 @@
-import React, {
+import {
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
+import type { KeyboardEvent } from 'react';
 import {
   getAllIngredients,
   mergeIngredientAutocompleteLists,
@@ -121,7 +122,7 @@ export default function IngredientBag({
   }, []);
 
   const onKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
+    (e: KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Tab') {
         if (showDropdown && suggestionRows[activeSuggestion]) {
           e.preventDefault();

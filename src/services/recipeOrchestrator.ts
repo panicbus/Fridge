@@ -33,8 +33,10 @@ export function rankingModeToPreferences(mode: RankingMode): RecipePreferences {
         preferVegetarian: false,
         hideNonVegan: false,
       };
-    default:
-      return { preferVegan: true, hideNonVegan: false };
+    default: {
+      const _exhaustive: never = mode;
+      return _exhaustive;
+    }
   }
 }
 

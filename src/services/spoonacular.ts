@@ -190,6 +190,13 @@ function mapInfoToUnified(
     vegan = false;
   }
 
+  // Same “inference is the floor” policy as vegan/vegetarian: never trust API
+  // gluten-/dairy-free badges when ingredient text contradicts them.
+  let glutenFree = info.glutenFree;
+  let dairyFree = info.dairyFree;
+  if (!inferred.glutenFree) glutenFree = false;
+  if (!inferred.dairyFree) dairyFree = false;
+
   return {
     id: `spn-${info.id}`,
     source: 'spoonacular',
@@ -207,8 +214,8 @@ function mapInfoToUnified(
     servings: info.servings,
     vegan,
     vegetarian,
-    glutenFree: info.glutenFree,
-    dairyFree: info.dairyFree,
+    glutenFree,
+    dairyFree,
   };
 }
 

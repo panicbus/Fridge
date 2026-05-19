@@ -8,8 +8,12 @@
     "filter": "node filter.js",
     "build-db": "node build-db.js",
     "fetch-images": "node fetch-images.js",
+    "audit-diet": "node --import tsx audit-diet.js",
     "build-data": "npm run download && npm run filter && npm run build-db",
     "all": "npm run download && npm run filter && npm run build-db && npm run fetch-images"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2"
   },
   "dependencies": {
     "better-sqlite3": "^11.5.0",

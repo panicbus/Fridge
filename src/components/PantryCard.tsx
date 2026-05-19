@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { usePantry } from '../hooks/usePantry';
 import './PantryCard.css';
 

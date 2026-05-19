@@ -1,5 +1,6 @@
-import { createCappedStore } from './storage';
 import type { RecipeViewEntry, UnifiedRecipe } from '../types';
+import { refreshDietFlags, refreshDietFlagsAll } from './refreshDietFlags';
+import { createCappedStore } from './storage';
 
 export const recipeViewHistoryStore = createCappedStore<RecipeViewEntry>(
   'fridge.recipeViewHistory',
@@ -10,8 +11,10 @@ export const recipeViewHistoryStore = createCappedStore<RecipeViewEntry>(
 );
 
 export function getRecipeViewHistory(): RecipeViewEntry[] {
-  return [...recipeViewHistoryStore.getAll()].sort(
-    (a, b) => b.viewedAt - a.viewedAt,
+  return refreshDietFlagsAll(
+    [...recipeViewHistoryStore.getAll()].sort(
+      (a, b) => b.viewedAt - a.viewedAt,
+    ),
   );
 }
 
@@ -27,7 +30,11 @@ export function recordRecipeView(recipe: UnifiedRecipe): RecipeViewEntry {
 }
 
 export function getRecipeViewById(recipeId: string): RecipeViewEntry | null {
-  return recipeViewHistoryStore.get(recipeId);
+  const row = recipeViewHistoryStore.get(recipeId);
+  if (!row) return null;
+  const refreshed = refreshDietFlags(row.recipe);
+  if (refreshed === row.recipe) return row;
+  return { ...row, recipe: refreshed };
 }
 
 export function clearRecipeViewHistory(): void {

@@ -1,4 +1,3 @@
-import React from 'react';
 import type { RankingMode } from '../services/recipeOrchestrator';
 import './DietPicker.css';
 

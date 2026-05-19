@@ -177,7 +177,10 @@ export function useFridgeAppState(): FridgeAppState {
         setRecipes(list);
         setSpoonacularNotice(getSpoonacularErrorBanner());
         setView('results');
-      } catch {
+      } catch (e) {
+        if (import.meta.env.DEV) {
+          console.error('[recipe-search] executeSearch failed', e);
+        }
         setError(
           'Something went wrong while fetching recipes. Check your connection and try again.',
         );

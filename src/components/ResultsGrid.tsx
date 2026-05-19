@@ -1,4 +1,3 @@
-import React from 'react';
 import RecipeCard from './RecipeCard';
 import type { RecipeMatch } from '../types';
 import './ResultsView.css';

@@ -1,10 +1,11 @@
-import React, {
+import {
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
+import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
 import {
   getAllIngredients,
   mergeIngredientAutocompleteLists,
@@ -146,7 +147,7 @@ export default function PantryManageView({
   }, []);
 
   const onAddKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
+    (e: ReactKeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Enter') {
         e.preventDefault();
         if (showAddDropdown && addSuggestionRows[activeAddSuggestion]) {

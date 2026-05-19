@@ -1,4 +1,3 @@
-import React from 'react';
 import { useStore } from '../hooks/useStore';
 import { savedRecipesStore } from '../services/savedRecipes';
 import { APP_VERSION } from '../version';

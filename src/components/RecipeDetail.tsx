@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import CachedMealImage from './CachedMealImage';
 import RecipeThumbFallback from './RecipeThumbFallback';
 import SaveButton from './SaveButton';

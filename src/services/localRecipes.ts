@@ -1,6 +1,6 @@
 import type { RecipeMatch, UnifiedRecipe } from '../types';
 import { normalizeInstructionSteps } from '../utils/instructionSteps';
-import { inferDietFlags } from './mealdb';
+import { inferDietFlags, pickPublicDietFlags } from './mealdb';
 
 export interface LocalRecipeRow {
   id: number;
@@ -28,24 +28,73 @@ function parseIngredientLine(str: string): { name: string; measure: string } {
   return { name: s.toLowerCase(), measure: '' };
 }
 
-async function rowToRecipe(row: LocalRecipeRow): Promise<UnifiedRecipe> {
-  const ingredientStrings: string[] = JSON.parse(row.ingredients_json);
-  const directions: string[] = JSON.parse(row.directions_json);
+function parseStringArrayJson(
+  raw: string,
+  field: string,
+  rowId: number,
+): string[] | null {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    if (import.meta.env.DEV) {
+      console.warn(
+        `[local-recipes] Invalid JSON for ${field} on recipe id=${rowId}`,
+      );
+    }
+    return null;
+  }
+  if (!Array.isArray(parsed)) {
+    if (import.meta.env.DEV) {
+      console.warn(
+        `[local-recipes] Expected array for ${field} on recipe id=${rowId}`,
+      );
+    }
+    return null;
+  }
+  const lines: string[] = [];
+  for (const item of parsed) {
+    if (typeof item !== 'string') {
+      if (import.meta.env.DEV) {
+        console.warn(
+          `[local-recipes] Non-string entry in ${field} on recipe id=${rowId}`,
+        );
+      }
+      return null;
+    }
+    lines.push(item);
+  }
+  return lines;
+}
+
+async function rowToRecipe(row: LocalRecipeRow): Promise<UnifiedRecipe | null> {
+  const ingredientStrings = parseStringArrayJson(
+    row.ingredients_json,
+    'ingredients_json',
+    row.id,
+  );
+  const directions = parseStringArrayJson(
+    row.directions_json,
+    'directions_json',
+    row.id,
+  );
+  if (!ingredientStrings || !directions) return null;
 
   const ingredients = ingredientStrings.map(parseIngredientLine);
-  const ingredientNames = ingredients.map((i) => i.name);
 
   let image = '';
   if (row.image_path?.trim() && window.localRecipes?.resolveImage) {
     image = await window.localRecipes.resolveImage(row.image_path.trim());
   }
 
-  const dietFlags = inferDietFlags(
-    [
-      ...ingredients.map((i) => ({ name: i.name, measure: i.measure })),
-      ...ingredientStrings.map((raw) => raw.toLowerCase()),
-    ],
-    row.title,
+  const diet = pickPublicDietFlags(
+    inferDietFlags(
+      [
+        ...ingredients.map((i) => ({ name: i.name, measure: i.measure })),
+        ...ingredientStrings.map((raw) => raw.toLowerCase()),
+      ],
+      row.title,
+    ),
   );
 
   const instructionsBlob = directions.filter(Boolean).join('\n');
@@ -65,7 +114,7 @@ async function rowToRecipe(row: LocalRecipeRow): Promise<UnifiedRecipe> {
     youtubeUrl: undefined,
     readyInMinutes: row.total_time_minutes ?? undefined,
     servings: undefined,
-    ...dietFlags,
+    ...diet,
   };
 }
 
@@ -107,7 +156,19 @@ export async function findRecipesLocal(
         userIngredients,
       );
     }
-    const recipes = await Promise.all(rows.map(rowToRecipe));
+    const parsed = await Promise.all(rows.map((row) => rowToRecipe(row)));
+    let skipped = 0;
+    const recipes: UnifiedRecipe[] = [];
+    for (const r of parsed) {
+      if (r) recipes.push(r);
+      else skipped++;
+    }
+    if (import.meta.env.DEV && skipped > 0) {
+      console.warn(
+        `[local-recipes] Skipped ${skipped} row(s) with invalid JSON or shape`,
+      );
+    }
+
     const normalized = userIngredients
       .map((i) => i.toLowerCase().trim())
       .filter(Boolean);
@@ -118,8 +179,7 @@ export async function findRecipesLocal(
         recipeNames.some((ri) => ingredientsMatch(ui, ri)),
       );
       const missingIngredients = recipeNames.filter(
-        (ri) =>
-          !normalized.some((ui) => ingredientsMatch(ui, ri)),
+        (ri) => !normalized.some((ui) => ingredientsMatch(ui, ri)),
       );
       const matchScore =
         recipeNames.length > 0

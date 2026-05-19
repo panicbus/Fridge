@@ -1,8 +1,9 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import CachedMealImage from './CachedMealImage';
 import RecipeThumbFallback from './RecipeThumbFallback';
 import { useStore } from '../hooks/useStore';
 import { recipeCardImageSrc } from '../services/mealdb';
+import { refreshDietFlagsAll } from '../services/refreshDietFlags';
 import { savedRecipesStore } from '../services/savedRecipes';
 import './SavedCard.css';
 
@@ -26,7 +27,8 @@ export default function SavedCard({
 }: SavedCardProps) {
   const rows = useStore(savedRecipesStore);
   const savedRecipes = useMemo(
-    () => [...rows].sort((a, b) => b.savedAt - a.savedAt),
+    () =>
+      refreshDietFlagsAll([...rows].sort((a, b) => b.savedAt - a.savedAt)),
     [rows],
   );
 

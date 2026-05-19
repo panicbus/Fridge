@@ -1,4 +1,3 @@
-import React from 'react';
 import type { DietPreference } from '../services/dietFilter';
 import DietFilterBar from './DietFilterBar';
 import ResultsHeader from './ResultsHeader';

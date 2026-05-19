@@ -1,7 +1,7 @@
-import React from 'react';
+import type { ImgHTMLAttributes } from 'react';
 
 export type CachedMealImageProps = Omit<
-  React.ImgHTMLAttributes<HTMLImageElement>,
+  ImgHTMLAttributes<HTMLImageElement>,
   'src'
 > & {
   src: string;

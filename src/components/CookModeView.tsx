@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import type { CSSProperties, ReactElement } from 'react';
 import type { UnifiedRecipe } from '../types';
 import { extractStepIngredients } from '../utils/stepIngredients';
 import { detectTimer } from '../utils/stepTimers';
@@ -35,7 +36,7 @@ function writeTimersEnabled(v: boolean): void {
   }
 }
 
-function CloseIcon(): React.ReactElement {
+function CloseIcon(): ReactElement {
   return (
     <svg
       width="18"
@@ -54,7 +55,7 @@ function CloseIcon(): React.ReactElement {
   );
 }
 
-function ClockIcon({ enabled }: { enabled: boolean }): React.ReactElement {
+function ClockIcon({ enabled }: { enabled: boolean }): ReactElement {
   return (
     <svg
       width="18"
@@ -76,7 +77,7 @@ function ClockIcon({ enabled }: { enabled: boolean }): React.ReactElement {
 }
 
 /** Solid silhouette icons — flat pictogram style */
-function ForkUtensil(): React.ReactElement {
+function ForkUtensil(): ReactElement {
   return (
     <svg viewBox="0 0 24 32" fill="currentColor" aria-hidden>
       <path d="M6 2h2v9H6V2zm5 0h2v9h-2V2zm5 0h2v9h-2V2zM10 11h8v2h-3v17h-2v-17h-3v-2z" />
@@ -84,7 +85,7 @@ function ForkUtensil(): React.ReactElement {
   );
 }
 
-function SpoonUtensil(): React.ReactElement {
+function SpoonUtensil(): ReactElement {
   return (
     <svg viewBox="0 0 24 32" fill="currentColor" aria-hidden>
       <ellipse cx="12" cy="9.5" rx="6.2" ry="7.8" />
@@ -93,7 +94,7 @@ function SpoonUtensil(): React.ReactElement {
   );
 }
 
-function KnifeUtensil(): React.ReactElement {
+function KnifeUtensil(): ReactElement {
   return (
     <svg viewBox="0 0 24 32" fill="currentColor" aria-hidden>
       <rect x="11" y="2" width="2" height="17" />
@@ -152,7 +153,7 @@ function CelebrationBurst({
   celebrationGeneration,
 }: {
   celebrationGeneration: number;
-}): React.ReactElement {
+}): ReactElement {
   return (
     <div className="cook-mode-celebration-burst" aria-hidden>
       {CELEBRATION_BURST.map((p, i) => (
@@ -167,7 +168,7 @@ function CelebrationBurst({
               /** Initial upward velocity term for ballistic arc (parabola lands on Dy at u=1). */
               '--burst-upkick': `${105 + ((i * 19 + i * i * 3) % 78)}px`,
               '--burst-delay': p.delay,
-            } as React.CSSProperties
+            } as CSSProperties
           }
         >
           {p.kind === 'fork' ? (

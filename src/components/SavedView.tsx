@@ -1,6 +1,7 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import RecipeCard from './RecipeCard';
 import { useStore } from '../hooks/useStore';
+import { refreshDietFlagsAll } from '../services/refreshDietFlags';
 import { savedRecipesStore } from '../services/savedRecipes';
 import type { RecipeMatch } from '../types';
 import { formatRelativeTime } from '../utils/relativeTime';
@@ -24,7 +25,8 @@ function toSavedCardMatch(recipe: RecipeMatch['recipe']): RecipeMatch {
 export default function SavedView({ onBack, onSelectRecipe }: SavedViewProps) {
   const rows = useStore(savedRecipesStore);
   const sorted = useMemo(
-    () => [...rows].sort((a, b) => b.savedAt - a.savedAt),
+    () =>
+      refreshDietFlagsAll([...rows].sort((a, b) => b.savedAt - a.savedAt)),
     [rows],
   );
 

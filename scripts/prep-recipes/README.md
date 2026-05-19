@@ -50,6 +50,16 @@ Written under **`../../assets/`** from this directory:
 
 These paths are bundled as Electron `extraResources` for production builds when present.
 
+## Diet inference audit (optional)
+
+After rebuilding **`assets/recipes.db`**, you can run the lexicon matcher over every row and write **`./diet-audit-report.txt`** (dev-only; not shipped):
+
+```bash
+npm run audit-diet
+```
+
+Uses **`tsx`** so the script imports the same **`inferDietFlags`** as the app (`src/services/diet/matcher.ts`). Skim Section 1 of the report for systematic misses before packaging.
+
 ## Rough disk / time
 
 | Step          | Time           | Disk           |

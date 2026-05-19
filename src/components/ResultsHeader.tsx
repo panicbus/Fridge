@@ -1,4 +1,4 @@
-import React, { type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { useStore } from '../hooks/useStore';
 import { savedRecipesStore } from '../services/savedRecipes';
 import './Header.css';

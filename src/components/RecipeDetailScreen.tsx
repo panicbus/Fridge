@@ -1,4 +1,3 @@
-import React from 'react';
 import RecipeDetail from './RecipeDetail';
 import type { RecipeMatch } from '../types';
 import type { RankingMode } from '../services/recipeOrchestrator';

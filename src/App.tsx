@@ -1,4 +1,3 @@
-import React from 'react';
 import Header from './components/Header';
 import IngredientBag from './components/IngredientBag';
 import DietPicker from './components/DietPicker';
@@ -11,7 +10,12 @@ import ResultsView from './components/ResultsView';
 import RecipeDetailScreen from './components/RecipeDetailScreen';
 import CookModeView from './components/CookModeView';
 import { useFridgeAppState } from './hooks/useFridgeAppState';
+import { explainDiet } from './services/diet/debug';
 import './App.css';
+
+if (import.meta.env.DEV) {
+  window.__explainDiet = explainDiet;
+}
 
 export default function App() {
   const {

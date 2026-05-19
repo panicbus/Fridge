@@ -13,3 +13,4 @@ assets/recipe-images/
 # Prep pipeline artifacts — download CSV locally; see scripts/prep-recipes/README.md
 scripts/prep-recipes/raw/*.csv
 scripts/prep-recipes/filtered.jsonl
+scripts/prep-recipes/diet-audit-report.txt

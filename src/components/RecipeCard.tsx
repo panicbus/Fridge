@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import CachedMealImage from './CachedMealImage';
 import RecipeThumbFallback from './RecipeThumbFallback';
 import SaveButton from './SaveButton';

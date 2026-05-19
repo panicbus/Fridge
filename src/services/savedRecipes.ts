@@ -1,4 +1,5 @@
 import type { SavedRecipe, UnifiedRecipe } from '../types';
+import { refreshDietFlags, refreshDietFlagsAll } from './refreshDietFlags';
 import { createStore } from './storage';
 
 const store = createStore<SavedRecipe>('fridge.savedRecipes');
@@ -8,7 +9,9 @@ function cloneRecipe(recipe: UnifiedRecipe): UnifiedRecipe {
 }
 
 export function getSavedRecipes(): SavedRecipe[] {
-  return [...store.getAll()].sort((a, b) => b.savedAt - a.savedAt);
+  return refreshDietFlagsAll(
+    [...store.getAll()].sort((a, b) => b.savedAt - a.savedAt),
+  );
 }
 
 export function isSaved(recipeId: string): boolean {
@@ -34,7 +37,11 @@ export function unsaveRecipe(recipeId: string): boolean {
 }
 
 export function getSavedRecipeById(recipeId: string): SavedRecipe | null {
-  return store.get(recipeId);
+  const row = store.get(recipeId);
+  if (!row) return null;
+  const refreshed = refreshDietFlags(row.recipe);
+  if (refreshed === row.recipe) return row;
+  return { ...row, recipe: refreshed };
 }
 
 export { store as savedRecipesStore };

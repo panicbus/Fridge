@@ -29,6 +29,8 @@ declare global {
   interface Window {
     mealImageCache?: MealImageCacheAPI;
     localRecipes?: LocalRecipesAPI;
+    /** Dev-only: diet inference debugger — assigned in App.tsx when import.meta.env.DEV */
+    __explainDiet?: (recipe: import('./types').UnifiedRecipe) => void;
   }
 }
 
