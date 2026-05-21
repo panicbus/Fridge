@@ -11,6 +11,7 @@ assets/recipes.db
 assets/recipe-images/
 
 # Prep pipeline artifacts — download CSV locally; see scripts/prep-recipes/README.md
-scripts/prep-recipes/raw/*.csv
+# Full downloaded bundle (CSV, images, Hugging Face cache) — do not commit
+scripts/prep-recipes/raw/
 scripts/prep-recipes/filtered.jsonl
 scripts/prep-recipes/diet-audit-report.txt
