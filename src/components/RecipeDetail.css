@@ -171,7 +171,11 @@
 }
 
 .hero-category {
-  padding: 4px 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 5px 10px;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.06em;
@@ -186,6 +190,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  line-height: 1;
   padding: 4px 10px;
   font-size: 11px;
   font-weight: 500;
@@ -203,7 +208,12 @@
 }
 
 .hero-diet-badge {
-  padding: 4px 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  line-height: 1;
+  padding: 5px 10px;
   font-size: 11px;
   font-weight: 500;
   border-radius: var(--radius-sm);
@@ -227,6 +237,10 @@
 }
 
 .hero-meta-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  line-height: 1;
   font-size: 12px;
   color: var(--text-secondary);
 }
@@ -255,7 +269,11 @@
 }
 
 .hero-tag {
-  padding: 4px 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 5px 10px;
   font-size: 12px;
   color: var(--text-secondary);
   background: var(--bg-tag);

@@ -37,6 +37,11 @@ export function getRecipeViewById(recipeId: string): RecipeViewEntry | null {
   return { ...row, recipe: refreshed };
 }
 
+/** Remove one recipe from recently viewed (e.g. History page). */
+export function removeRecipeView(id: string): boolean {
+  return recipeViewHistoryStore.remove(id);
+}
+
 export function clearRecipeViewHistory(): void {
   recipeViewHistoryStore.clear();
 }

@@ -8,6 +8,33 @@ const ML_PER_TSP = 4.92892159375;
 const ML_PER_TBSP = 14.78676478125;
 const ML_PER_CUP = 236.5882365;
 
+/** Single-glyph vulgar fractions for on-screen recipe text (after ¼-rounding logic). */
+const ASCII_TO_VULGAR_GLYPH: Readonly<[string, string][]> = [
+  ['1/2', '\u00BD'],
+  ['1/3', '\u2153'],
+  ['2/3', '\u2154'],
+  ['1/4', '\u00BC'],
+  ['3/4', '\u00BE'],
+];
+
+function fracRegexEsc(ascii: string): string {
+  return ascii.replace(/\//g, '\\/');
+}
+
+/** Turn 1/2, 1/3, … into ½, ⅓, … (mixed numbers like "2 3/4" → "2 ¾"). */
+function replaceAsciiFractionsWithUnicodeGlyphs(input: string): string {
+  let s = input;
+  for (const [ascii, glyph] of ASCII_TO_VULGAR_GLYPH) {
+    const esc = fracRegexEsc(ascii);
+    s = s.replace(new RegExp(`(\\d+)\\s+${esc}\\b`, 'g'), `$1 ${glyph}`);
+  }
+  for (const [ascii, glyph] of ASCII_TO_VULGAR_GLYPH) {
+    const esc = fracRegexEsc(ascii);
+    s = s.replace(new RegExp(`\\b${esc}\\b`, 'g'), glyph);
+  }
+  return s;
+}
+
 /** Generic grams→cups when density unknown (between flour and packed sugar). */
 const GRAMS_PER_CUP_APPROX = 125;
 
@@ -80,6 +107,7 @@ function fixTrailingCupPlural(input: string): string {
 
 function normalizeUnitAbbreviations(input: string): string {
   let s = input;
+  s = s.replace(/\btbls\b/gi, 'tbsp');
   s = s.replace(/\btblsp\b/gi, 'tbsp');
   s = s.replace(/\btablespoons?\b/gi, 'tbsp');
   s = s.replace(/\bteaspoons?\b/gi, 'tsp');
@@ -259,6 +287,7 @@ export function convertMetricMeasureToImperial(measure: string): string {
   let s = replaceMetricQuantities(t);
   s = normalizeUnitAbbreviations(s);
   s = fixTrailingCupPlural(s);
+  s = replaceAsciiFractionsWithUnicodeGlyphs(s);
   return s;
 }
 
@@ -297,5 +326,6 @@ export function convertRecipeStepTextToImperial(text: string): string {
   s = replaceCelsius(s);
   s = normalizeUnitAbbreviations(s);
   s = fixTrailingCupPlural(s);
+  s = replaceAsciiFractionsWithUnicodeGlyphs(s);
   return s;
 }
