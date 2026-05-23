@@ -60,7 +60,7 @@
   flex-direction: column;
   align-items: stretch;
   gap: 14px;
-  padding: 42px 28px 14px;
+  padding: 14px 28px 14px;
   background: var(--bg);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;

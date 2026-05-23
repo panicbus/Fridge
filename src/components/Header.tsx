@@ -6,13 +6,13 @@ import './Header.css';
 export interface HeaderProps {
   onSaved?: () => void;
   onHistory?: () => void;
-  onSettings?: () => void;
+  onOpenAbout?: () => void;
 }
 
 export default function Header({
   onSaved,
   onHistory,
-  onSettings,
+  onOpenAbout,
 }: HeaderProps) {
   const savedRows = useStore(savedRecipesStore);
   const savedCount = savedRows.length;
@@ -96,8 +96,9 @@ export default function Header({
         <button
           type="button"
           className="app-header-btn app-header-btn--icon"
-          aria-label="Settings"
-          onClick={onSettings}
+          title="About Fridge"
+          aria-label="About Fridge"
+          onClick={onOpenAbout}
         >
           ⚙
         </button>

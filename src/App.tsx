@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Header from './components/Header';
 import IngredientBag from './components/IngredientBag';
 import DietPicker from './components/DietPicker';
@@ -9,6 +10,7 @@ import PantryManageView from './components/PantryManageView';
 import ResultsView from './components/ResultsView';
 import RecipeDetailScreen from './components/RecipeDetailScreen';
 import CookModeView from './components/CookModeView';
+import { AboutPanel } from './components/AboutPanel';
 import { useFridgeAppState } from './hooks/useFridgeAppState';
 import { explainDiet } from './services/diet/debug';
 import './App.css';
@@ -18,6 +20,8 @@ if (import.meta.env.DEV) {
 }
 
 export default function App() {
+  const [aboutOpen, setAboutOpen] = useState(false);
+
   const {
     view,
     ingredients,
@@ -53,6 +57,14 @@ export default function App() {
     bumpPantryRevision,
   } = useFridgeAppState();
 
+  function handleOpenAbout() {
+    setAboutOpen(true);
+  }
+
+  function handleCloseAbout() {
+    setAboutOpen(false);
+  }
+
   return (
     <div className="app">
       {view === 'home' && (
@@ -60,9 +72,7 @@ export default function App() {
           <Header
             onSaved={handleOpenSaved}
             onHistory={handleOpenHistory}
-            onSettings={() => {
-              console.log('settings — coming soon');
-            }}
+            onOpenAbout={handleOpenAbout}
           />
 
           <section className="home-top">
@@ -161,6 +171,8 @@ export default function App() {
           onGoHome={handleGoHome}
         />
       ) : null}
+
+      {aboutOpen ? <AboutPanel onClose={handleCloseAbout} /> : null}
     </div>
   );
 }
