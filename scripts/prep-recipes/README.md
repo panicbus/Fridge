@@ -2,6 +2,10 @@
 
 One-time scripts to build the bundled **local recipe trove** SQLite DB and hero images. Run from `scripts/prep-recipes/`.
 
+## Layer 2 (optional) — curated site scrapers
+
+To **append** thousands of recipes from Budget Bytes, The Kitchn, Minimalist Baker, Love & Lemons, Smitten Kitchen, and Serious Eats (same `assets/recipes.db` and `assets/recipe-images/`), run the Python pipeline: **`python/README.md`**.
+
 ## Prerequisites
 
 - Node 18+

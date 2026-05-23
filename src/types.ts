@@ -23,6 +23,8 @@ export interface UnifiedRecipe {
   instructions: string[];
   ingredients: { name: string; measure: string }[];
   sourceUrl?: string;
+  /** Bundled DB attribution (Epicurious, Budget Bytes, …). */
+  sourceName?: string;
   youtubeUrl?: string;
   readyInMinutes?: number;
   servings?: number;

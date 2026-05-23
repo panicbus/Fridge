@@ -67,7 +67,15 @@ function parseStringArrayJson(
   return lines;
 }
 
-async function rowToRecipe(row: LocalRecipeRow): Promise<UnifiedRecipe | null> {
+/** Bundled WebPs are served by the `fridge://` protocol in the Electron main process. */
+function localRecipeImageUrl(filename: string | null | undefined): string {
+  if (!filename?.trim()) return '';
+  const base = filename.trim().split(/[/\\]/).pop() ?? '';
+  if (!/^[\w.-]+\.webp$/i.test(base)) return '';
+  return `fridge://recipe-images/${encodeURIComponent(base)}`;
+}
+
+function rowToRecipe(row: LocalRecipeRow): UnifiedRecipe | null {
   const ingredientStrings = parseStringArrayJson(
     row.ingredients_json,
     'ingredients_json',
@@ -82,10 +90,7 @@ async function rowToRecipe(row: LocalRecipeRow): Promise<UnifiedRecipe | null> {
 
   const ingredients = ingredientStrings.map(parseIngredientLine);
 
-  let image = '';
-  if (row.image_path?.trim() && window.localRecipes?.resolveImage) {
-    image = await window.localRecipes.resolveImage(row.image_path.trim());
-  }
+  const image = localRecipeImageUrl(row.image_path);
 
   const diet = pickPublicDietFlags(
     inferDietFlags(
@@ -111,6 +116,7 @@ async function rowToRecipe(row: LocalRecipeRow): Promise<UnifiedRecipe | null> {
     instructions: normalizeInstructionSteps(instructionsBlob),
     ingredients,
     sourceUrl: row.source_url || undefined,
+    sourceName: row.source_name?.trim() || 'Epicurious',
     youtubeUrl: undefined,
     readyInMinutes: row.total_time_minutes ?? undefined,
     servings: undefined,
@@ -156,10 +162,10 @@ export async function findRecipesLocal(
         userIngredients,
       );
     }
-    const parsed = await Promise.all(rows.map((row) => rowToRecipe(row)));
     let skipped = 0;
     const recipes: UnifiedRecipe[] = [];
-    for (const r of parsed) {
+    for (const row of rows) {
+      const r = rowToRecipe(row);
       if (r) recipes.push(r);
       else skipped++;
     }

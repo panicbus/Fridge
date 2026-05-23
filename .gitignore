@@ -15,3 +15,10 @@ assets/recipe-images/
 scripts/prep-recipes/raw/
 scripts/prep-recipes/filtered.jsonl
 scripts/prep-recipes/diet-audit-report.txt
+
+# Layer 2 Python scrape intermediates (see scripts/prep-recipes/python/README.md)
+scripts/prep-recipes/python/venv/
+scripts/prep-recipes/python/urls/
+scripts/prep-recipes/python/scraped/
+scripts/prep-recipes/python/filtered/
+scripts/prep-recipes/python/__pycache__/

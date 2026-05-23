@@ -1,4 +1,6 @@
-import { app, BrowserWindow, nativeImage, shell } from 'electron';
+import { app, BrowserWindow, nativeImage, protocol, shell } from 'electron';
+import { join } from 'node:path';
+import { readFile } from 'node:fs/promises';
 import * as path from 'path';
 import { registerMealImageCacheHandlers } from './imageCache';
 import {
@@ -24,6 +26,20 @@ function buildAssetsDir(): string {
  * Here we only cap size for memory / sharpness when handing PNG to `app.dock.setIcon`.
  */
 const MAX_DOCK_ICON_RASTER_PX = 512;
+
+/** Serves bundled assets (e.g. recipe WebPs) to the renderer without blocked file:// fetches. */
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: 'fridge',
+    privileges: {
+      standard: true,
+      secure: true,
+      supportFetchAPI: true,
+      stream: true,
+      bypassCSP: true,
+    },
+  },
+]);
 
 /** Prefer PNG for Dock — ICNS multi-resolution sources sometimes scale inconsistently in Electron. */
 function loadDockIcon(): Electron.NativeImage | null {
@@ -78,7 +94,59 @@ function createWindow(): void {
   });
 }
 
-void app.whenReady().then(() => {
+void app.whenReady().then(async () => {
+  const assetsDir = app.isPackaged
+    ? join(process.resourcesPath, 'assets')
+    : join(__dirname, '..', 'assets');
+
+  protocol.handle('fridge', async (request) => {
+    try {
+      const url = new URL(request.url);
+      if (url.host !== 'recipe-images') {
+        return new Response('Not Found', { status: 404 });
+      }
+      const name = path.basename(decodeURIComponent(url.pathname));
+      if (
+        !name ||
+        name === '.' ||
+        name === '..' ||
+        !name.endsWith('.webp')
+      ) {
+        return new Response('Forbidden', { status: 403 });
+      }
+      const recipeImagesRoot = path.join(
+        path.resolve(assetsDir),
+        'recipe-images',
+      );
+      const resolvedFile = path.resolve(
+        path.join(recipeImagesRoot, name),
+      );
+      const rel = path.relative(recipeImagesRoot, resolvedFile);
+      if (rel.startsWith('..') || path.isAbsolute(rel)) {
+        return new Response('Forbidden', { status: 403 });
+      }
+
+      const data = await readFile(resolvedFile);
+      const ext = name.split('.').pop()?.toLowerCase();
+      const mimeType =
+        ext === 'webp'
+          ? 'image/webp'
+          : ext === 'jpg' || ext === 'jpeg'
+            ? 'image/jpeg'
+            : ext === 'png'
+              ? 'image/png'
+              : 'application/octet-stream';
+
+      return new Response(data, {
+        status: 200,
+        headers: { 'Content-Type': mimeType },
+      });
+    } catch (e) {
+      console.error('[fridge protocol] error serving', request.url, e);
+      return new Response('Not Found', { status: 404 });
+    }
+  });
+
   registerMealImageCacheHandlers();
   registerLocalRecipesHandlers();
   if (process.platform === 'darwin') {

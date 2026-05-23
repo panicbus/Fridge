@@ -10,6 +10,4 @@ contextBridge.exposeInMainWorld('localRecipes', {
     ipcRenderer.invoke('local-recipes:search', { ingredients, limit }),
   getById: (id: number | string) =>
     ipcRenderer.invoke('local-recipes:get-by-id', id),
-  resolveImage: (filename: string | null) =>
-    ipcRenderer.invoke('local-recipes:resolve-image', filename),
 });

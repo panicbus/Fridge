@@ -1,5 +1,6 @@
 import axios, { isAxiosError } from 'axios';
 import type { RecipeMatch, UnifiedRecipe } from '../types';
+import { stripIngredientRetailParen } from '../utils/ingredientRetailParen';
 import { normalizeInstructionSteps } from '../utils/instructionSteps';
 import { dedupeRecipeTags } from '../utils/recipeTags';
 import { inferDietFlags } from './mealdb';
@@ -169,8 +170,10 @@ function mapInfoToUnified(
   }
 
   const ingredients = (info.extendedIngredients ?? []).map((ext) => ({
-    name: (ext.nameClean || ext.name || '').toLowerCase().trim(),
-    measure: ext.original ?? '',
+    name: stripIngredientRetailParen(
+      (ext.nameClean || ext.name || '').toLowerCase().trim(),
+    ),
+    measure: stripIngredientRetailParen(ext.original ?? ''),
   }));
 
   const inferred = inferDietFlags(
@@ -225,10 +228,10 @@ function matchFromFindAndUnified(
   normalizedUser: string[],
 ): RecipeMatch {
   const usedNames = findRow.usedIngredients.map((u) =>
-    u.name.toLowerCase().trim(),
+    stripIngredientRetailParen(u.name.toLowerCase().trim()),
   );
   const missedNames = findRow.missedIngredients.map((m) =>
-    m.name.toLowerCase().trim(),
+    stripIngredientRetailParen(m.name.toLowerCase().trim()),
   );
   const matchedSet = new Set<string>();
   for (const u of normalizedUser) {

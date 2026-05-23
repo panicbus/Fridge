@@ -13,6 +13,7 @@ import {
   flagEmojiForOrigin,
   formatOriginLabel,
 } from '../utils/areaFlag';
+import { stripIngredientRetailParen } from '../utils/ingredientRetailParen';
 import { dedupeRecipeTags } from '../utils/recipeTags';
 import './RecipeDetail.css';
 
@@ -226,18 +227,22 @@ export default function RecipeDetail({
           ) : null}
           <ul className="ingredients-list">
             {ingredientRows.map((row, i) => {
+              const rawName = row.name;
+              const nameClean = stripIngredientRetailParen(rawName);
               const has = normalizedUser.some((u) =>
-                ingredientsMatch(u, row.name),
+                ingredientsMatch(u, nameClean),
               );
               return (
                 <li
-                  key={`${row.name}-${i}`}
+                  key={`${nameClean}-${i}`}
                   className={`ingredient-row ${has ? 'have' : 'need'}`}
                 >
                   <span className="ingredient-dot" aria-hidden />
-                  <span className="ingredient-name">{row.name}</span>
+                  <span className="ingredient-name">{nameClean}</span>
                   <span className="ingredient-measure">
-                    {convertMetricMeasureToImperial(row.measure)}
+                    {convertMetricMeasureToImperial(
+                      stripIngredientRetailParen(row.measure),
+                    )}
                   </span>
                 </li>
               );
@@ -268,7 +273,9 @@ export default function RecipeDetail({
               target="_blank"
               rel="noopener noreferrer"
             >
-              Original recipe
+              {recipe.source === 'local'
+                ? `Recipe from ${recipe.sourceName ?? 'the source'} →`
+                : 'Original recipe'}
             </a>
           )}
         </aside>

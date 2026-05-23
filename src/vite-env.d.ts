@@ -2,6 +2,7 @@
 
 interface ImportMetaEnv {
   readonly VITE_SPOONACULAR_API_KEY?: string;
+  readonly VITE_ENABLE_SPOONACULAR?: string;
   readonly DEV: boolean;
   readonly MODE: string;
 }
@@ -20,7 +21,6 @@ export interface LocalRecipesAPI {
     limit?: number,
   ) => Promise<Record<string, unknown>[]>;
   getById: (id: number | string) => Promise<Record<string, unknown> | null>;
-  resolveImage: (filename: string | null) => Promise<string>;
 }
 
 declare global {

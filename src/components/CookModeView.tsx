@@ -14,6 +14,7 @@ import {
   convertMetricMeasureToImperial,
   convertRecipeStepTextToImperial,
 } from '../utils/imperialMeasures';
+import { stripIngredientRetailParen } from '../utils/ingredientRetailParen';
 import { requestWakeLock } from '../utils/wakeLock';
 import StepTimer from './StepTimer';
 import './CookModeView.css';
@@ -441,11 +442,13 @@ export default function CookModeView({
               <div className="cook-mode-ingredients-label">For this step:</div>
               <ul className="cook-mode-ingredients-list">
                 {stepIngredients.map((ing) => (
-                  <li key={ing.name}>
+                  <li key={stripIngredientRetailParen(ing.name)}>
                     <span className="ing-measure">
-                    {convertMetricMeasureToImperial(ing.measure)}
-                  </span>
-                    {ing.name}
+                      {convertMetricMeasureToImperial(
+                        stripIngredientRetailParen(ing.measure),
+                      )}
+                    </span>
+                    {stripIngredientRetailParen(ing.name)}
                   </li>
                 ))}
               </ul>

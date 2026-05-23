@@ -6,7 +6,7 @@ Desktop recipe discovery (Electron + React + Vite). Enter ingredients you have; 
 
 This app uses three recipe sources:
 
-- **Local trove** — bundled SQLite (~10k curated weeknight-friendly recipes derived from [RecipeNLG](https://recipenlg.cs.put.poznan.pl/), built offline via `scripts/prep-recipes`; see [Local recipe trove](#local-recipe-trove).
+- **Local trove** — bundled SQLite (Epicurious and optional Layer 2 sites), built offline; see [Local recipe trove](#local-recipe-trove).
 - **TheMealDB** — free, no key needed, ~600 recipes
 - **Spoonacular** — free tier (150 requests/day), 300,000+ recipes — recommended
 
@@ -90,26 +90,19 @@ Timers can be toggled off via the clock icon in the top bar if you prefer to ign
 
 ## Local recipe trove
 
-The app can ship with a bundled SQLite database of ~10,000 curated weeknight-friendly recipes, sourced from [RecipeNLG](https://recipenlg.cs.put.poznan.pl/) (manual download of **`full_dataset.csv`**, subject to the dataset terms — the Hugging Face repo `mbien/recipe_nlg` only hosts the loader script, not the CSV). When present, it is queried alongside TheMealDB and Spoonacular for ingredient search.
+The local trove consists of recipes from two layers:
 
-To build the database (one-time). Optional WebP thumbnails from recipe **source pages** usually fail for RecipeNLG (`link` rows point at old sites); the prep script **probes first** and skips a long useless crawl when none succeed. **`npm run build-data`** builds only the SQLite DB (skip image step entirely).
+1. **Epicurious** (~6,000 recipes after filtering) — bundled from the Kaggle *Food Ingredients and Recipes Dataset with Images* (see `scripts/prep-recipes`). Rows use a synthetic Epicurious search URL for attribution when built with that pipeline.
 
-```bash
-cd scripts/prep-recipes
-npm install
-# Download full_dataset.csv from https://recipenlg.cs.put.poznan.pl/dataset → copy to ./raw/
-npm run download   # verifies the CSV
-npm run build-data # filter → build-db (recommended)
-# optional: npm run fetch-images  # probes / may skip bulk fetch; or SKIP_IMAGE_FETCH=1 npm run all
-```
+2. **Curated cooking sites** (~10,000+ recipes after filters, when you run Layer 2) — scraped with Python and [`recipe-scrapers`](https://github.com/hhursev/recipe-scrapers/) from six sites: Budget Bytes, The Kitchn, Minimalist Baker, Love & Lemons, Smitten Kitchen, and Serious Eats. Each recipe stores the **canonical** source URL in the database; the in-app link opens the original article.
 
-Filtering requires **Python 3** (`python3`) to parse list-shaped columns in the official CSV; see `scripts/prep-recipes/README.md`.
+To rebuild **Layer 1** (Epicurious CSV + images + SQLite), see **`scripts/prep-recipes/README.md`**.
 
-You need **`assets/recipes.db`** for local search; **`assets/recipe-images/`** is optional and is often empty—cards use placeholders. Both paths are listed as Electron **extra resources** when present. Without running prep, local search returns no results; **run at least `build-data` before `npm run dist:mac`** so `recipes.db` exists.
+To add **Layer 2** (append scraped sites into the same `assets/recipes.db` and `assets/recipe-images/`), see **`scripts/prep-recipes/python/README.md`**.
 
-The local source gets a small ranking boost in `recipeOrchestrator.ts` so curated matches tend to appear slightly higher while Spoonacular and MealDB still supply variety.
+You need **`assets/recipes.db`** for local search. **`assets/recipe-images/`** holds WebP thumbnails (`*.webp` for Layer 1, `l2-*.webp` for Layer 2); the Electron app serves them via the custom **`fridge://`** protocol so images load reliably in the renderer.
 
-**Electron local DB:** The app opens `recipes.db` in the main process with **sql.js** (WASM), so there is **no native SQLite addon** to rebuild for Apple Silicon vs Intel. The prep pipeline still builds **FTS5** tables for tooling consistency, but the packaged runtime searches with **token substring matching** on title and NER fields (ranked by how many ingredient tokens match). Re-run **`npm run dev`** after `npm install`; if local search is empty, confirm **`assets/recipes.db`** exists (build it under `scripts/prep-recipes`).
+**Electron local DB:** The app opens `recipes.db` in the main process with **sql.js** (WASM). The packaged runtime searches with token substring matching on title and `ner_json`. Re-run **`npm run dev`** after `npm install`; if local search is empty, confirm **`assets/recipes.db`** exists.
 
 ## Icon assets
 

@@ -1,6 +1,6 @@
 {
   "name": "fridge",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "What's in your fridge? Get recipes.",
   "main": "dist-electron/main.js",
   "scripts": {

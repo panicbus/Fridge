@@ -1,10 +1,25 @@
-import type { RecipeMatch } from '../types';
+import type { RecipeMatch, UnifiedRecipe } from '../types';
 import { findRecipesMealDB } from './mealdb';
 import { findRecipesLocal } from './localRecipes';
 import {
   clearSpoonacularError,
   findRecipesSpoonacular,
 } from './spoonacular';
+
+// Spoonacular is off by default. The bundled local trove + MealDB provides
+// enough coverage. To re-enable, set VITE_ENABLE_SPOONACULAR=true in .env
+// (and ensure VITE_SPOONACULAR_API_KEY is set).
+const SPOONACULAR_ENABLED =
+  import.meta.env.VITE_ENABLE_SPOONACULAR === 'true';
+
+// Epicurious / Layer 2 vs API ranking in sortKey().
+// was 5; bumped so Epicurious / Layer 2 results win ranking against API sources
+// unless the API ingredient match is dramatically stronger.
+// The bundled local trove is image-required, properly attributed, and pre-filtered
+// for quality — it should surface preferentially over API results unless the API
+// result has a meaningfully better ingredient match. +25 does that without
+// entirely silencing the APIs.
+const LOCAL_BOOST = 25;
 
 export interface RecipePreferences {
   preferVegan?: boolean;
@@ -53,7 +68,7 @@ function sortKey(m: RecipeMatch, prefs: RecipePreferences): number {
   const preferVegan = prefs.preferVegan ?? true;
   const preferVegetarian = prefs.preferVegetarian ?? false;
   const matchedCount = m.matchedIngredients.length;
-  const localBoost = r.source === 'local' ? 5 : 0;
+  const localBoost = r.source === 'local' ? LOCAL_BOOST : 0;
   return (
     (preferVegan && r.vegan ? 1000 : 0) +
     (preferVegetarian && r.vegetarian ? 200 : 0) +
@@ -86,6 +101,15 @@ function dedupeMatches(matches: RecipeMatch[]): RecipeMatch[] {
   return [...byKey.values()];
 }
 
+/** Grid thumbnails: https MealDB/Spoonacular, or bundled `fridge://` WebPs. */
+function hasUsableImage(recipe: UnifiedRecipe): boolean {
+  const img = recipe.image;
+  if (!img || typeof img !== 'string') return false;
+  if (img === 'null' || img === 'undefined') return false;
+  if (!/^(https?|fridge):\/\//.test(img)) return false;
+  return true;
+}
+
 export async function findRecipes(
   userIngredients: string[],
   preferences?: RecipePreferences,
@@ -98,13 +122,19 @@ export async function findRecipes(
 
   clearSpoonacularError();
 
-  const settled = await Promise.allSettled([
-    findRecipesSpoonacular(userIngredients),
-    findRecipesMealDB(userIngredients),
+  const sources: Promise<RecipeMatch[]>[] = [
     findRecipesLocal(userIngredients),
-  ]);
+    findRecipesMealDB(userIngredients),
+  ];
+  if (SPOONACULAR_ENABLED) {
+    sources.push(findRecipesSpoonacular(userIngredients));
+  }
 
-  const sourceLabels = ['spoonacular', 'mealdb', 'local'] as const;
+  const sourceLabels = SPOONACULAR_ENABLED
+    ? (['local', 'mealdb', 'spoonacular'] as const)
+    : (['local', 'mealdb'] as const);
+
+  const settled = await Promise.allSettled(sources);
   if (import.meta.env.DEV) {
     settled.forEach((r, i) => {
       if (r.status === 'rejected') {
@@ -127,9 +157,10 @@ export async function findRecipes(
   }
 
   let list = dedupeMatches(combined);
+  list = list.filter((m) => hasUsableImage(m.recipe));
 
   if (import.meta.env.DEV) {
-    console.info('[recipe-search] after dedupe', {
+    console.info('[recipe-search] after dedupe + image filter', {
       bySource: countBySource(list),
       total: list.length,
     });

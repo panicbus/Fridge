@@ -2,7 +2,6 @@ import { app, ipcMain } from 'electron';
 import type { BindParams, Database, SqlJsStatic, SqlValue } from 'sql.js';
 import * as fs from 'fs';
 import * as path from 'path';
-import { pathToFileURL } from 'url';
 
 let sqlFactory: SqlJsStatic | null = null;
 let dbMem: Database | null = null;
@@ -25,15 +24,6 @@ function recipesDbPath(): string | null {
     if (fs.existsSync(p)) return p;
   }
   return null;
-}
-
-function recipeImagesDir(): string {
-  if (app.isPackaged) {
-    return path.join(process.resourcesPath, 'assets', 'recipe-images');
-  }
-  const dbp = recipesDbPath();
-  if (dbp) return path.join(path.dirname(dbp), 'recipe-images');
-  return path.join(devAssetsDirectoryCandidates()[0], 'recipe-images');
 }
 
 /** WASM must load from a real path (asar unpacked in production builds). */
@@ -183,7 +173,6 @@ function searchRecipesByTokens(
 export function registerLocalRecipesHandlers(): void {
   ipcMain.removeHandler('local-recipes:search');
   ipcMain.removeHandler('local-recipes:get-by-id');
-  ipcMain.removeHandler('local-recipes:resolve-image');
 
   if (!recipesDbPath()) {
     console.warn(
@@ -236,17 +225,6 @@ export function registerLocalRecipesHandlers(): void {
     }
   });
 
-  ipcMain.handle(
-    'local-recipes:resolve-image',
-    (_event, filename: unknown) => {
-      if (typeof filename !== 'string' || !filename.trim()) return '';
-      const safe = path.basename(filename.trim());
-      if (!safe.endsWith('.webp')) return '';
-      const full = path.join(recipeImagesDir(), safe);
-      if (!fs.existsSync(full)) return '';
-      return pathToFileURL(full).href;
-    },
-  );
 }
 
 export function closeLocalRecipesDb(): void {
