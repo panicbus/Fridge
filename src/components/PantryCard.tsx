@@ -111,17 +111,19 @@ export default function PantryCard({
             {showRecentColumn ? (
               <div className="pantry-col pantry-col--recent">
                 <p className="pantry-card-section-label">Ingredients on the countertop</p>
-                <div className="pantry-chip-wrap">
-                  {recent.map((item) => (
-                    <button
-                      key={item.name}
-                      type="button"
-                      className="pantry-chip"
-                      onClick={() => chipClick(item.name)}
-                    >
-                      + {item.name}
-                    </button>
-                  ))}
+                <div className="pantry-chip-scroll pantry-chip-scroll--countertop">
+                  <div className="pantry-chip-wrap">
+                    {recent.map((item) => (
+                      <button
+                        key={item.name}
+                        type="button"
+                        className="pantry-chip"
+                        onClick={() => chipClick(item.name)}
+                      >
+                        + {item.name}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             ) : null}

@@ -201,6 +201,13 @@
   min-width: 0;
 }
 
+/* Extra bottom inset on countertop column when pantry card is narrow */
+@container pantry-card (max-width: 520px) {
+  .pantry-card-split:not(.pantry-card-split--shelves-only) .pantry-col--recent {
+    padding-bottom: 14px;
+  }
+}
+
 .pantry-col--shelves {
   min-width: 0;
 }
@@ -232,6 +239,10 @@
   .pantry-card-section-label {
     letter-spacing: 0.06em;
     font-size: 9px;
+  }
+
+  .pantry-card-split:not(.pantry-card-split--shelves-only) .pantry-col--recent {
+    padding-bottom: 22px;
   }
 
   .pantry-card-split:not(.pantry-card-split--shelves-only) {
@@ -266,6 +277,16 @@
 
 .pantry-chip-scroll--flat {
   max-height: 140px;
+}
+
+.pantry-col > .pantry-card-section-label {
+  flex-shrink: 0;
+}
+
+.pantry-chip-scroll--countertop {
+  align-content: flex-start;
+  padding-inline-end: 8px;
+  padding-bottom: 4px;
 }
 
 .pantry-chip-scroll--shelves {
