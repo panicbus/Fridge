@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>DMG background</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Georgia&display=swap');
+  body {
+    margin: 0;
+    width: 540px;
+    height: 380px;
+    background: #f5efe4;
+    font-family: Georgia, serif;
+    color: #1a1815;
+    overflow: hidden;
+    position: relative;
+  }
+  .header {
+    position: absolute;
+    top: 28px;
+    left: 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .logo {
+    color: #1a1815;
+  }
+  .wordmark {
+    font-size: 24px;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .dot { color: #c1432a; }
+  .tagline {
+    position: absolute;
+    top: 64px;
+    left: 76px;
+    font-style: italic;
+    font-size: 13px;
+    color: #8a7e6a;
+    letter-spacing: 0.02em;
+  }
+  .arrow {
+    position: absolute;
+    top: 200px;
+    left: 200px;
+    width: 160px;
+    height: 4px;
+  }
+  .arrow svg {
+    width: 100%;
+    height: 60px;
+  }
+  .drag-label {
+    position: absolute;
+    top: 290px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-style: italic;
+    font-size: 11px;
+    color: #8a7e6a;
+    letter-spacing: 0.04em;
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <svg class="logo" width="32" height="38" viewBox="0 0 48 58" fill="none">
+      <rect x="3" y="3" width="42" height="52" rx="6" stroke="currentColor" stroke-width="2.4"/>
+      <line x1="3" y1="22" x2="45" y2="22" stroke="currentColor" stroke-width="2.4"/>
+      <line x1="38.5" y1="11" x2="38.5" y2="16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+      <line x1="38.5" y1="32" x2="38.5" y2="40" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+      <circle cx="14" cy="36" r="3.5" fill="#c1432a"/>
+    </svg>
+    <div class="wordmark">fridge<span class="dot">.</span></div>
+  </div>
+  <div class="tagline">Cook what you have.</div>
+
+  <div class="arrow">
+    <svg viewBox="0 0 160 60" preserveAspectRatio="none">
+      <path d="M 0 30 Q 80 0 160 30"
+            stroke="#c1432a"
+            stroke-width="1.5"
+            stroke-dasharray="4,4"
+            fill="none"
+            opacity="0.55"/>
+      <polygon points="160,30 152,24 152,36" fill="#c1432a" opacity="0.55"/>
+    </svg>
+  </div>
+
+  <div class="drag-label">drag to install</div>
+</body>
+</html>

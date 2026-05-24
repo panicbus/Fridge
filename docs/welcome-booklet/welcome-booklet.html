@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Fridge — Welcome</title>
+<link rel="stylesheet" href="welcome-booklet.css">
+</head>
+<body>
+
+<!-- PAGE 1: COVER -->
+<section class="page page-cover">
+  <div class="cover-content">
+    <svg class="cover-logo" width="100" height="120" viewBox="0 0 48 58" fill="none">
+      <rect x="3" y="3" width="42" height="52" rx="6" stroke="currentColor" stroke-width="2.4"/>
+      <line x1="3" y1="22" x2="45" y2="22" stroke="currentColor" stroke-width="2.4"/>
+      <line x1="38.5" y1="11" x2="38.5" y2="16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+      <line x1="38.5" y1="32" x2="38.5" y2="40" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+      <circle cx="14" cy="36" r="3.5" fill="#c1432a"/>
+    </svg>
+    <h1 class="cover-title">fridge<span class="dot">.</span></h1>
+    <p class="cover-tagline">Cook what you have.</p>
+    <p class="cover-subtitle">A small guide.</p>
+  </div>
+</section>
+
+<!-- PAGE 2: A NOTE FROM NICO -->
+<section class="page">
+  <header class="page-header">
+    <span class="page-eyebrow">A note from Nico</span>
+    <h2>Why I made this.</h2>
+  </header>
+
+  <div class="prose">
+    <p>Most recipe apps assume you start with a recipe and shop for ingredients. I do the opposite. I open the fridge, look at what's there, and figure out what to make. Fridge is built around that.</p>
+
+    <p>Type what you have. Get back recipes that actually match. Save the ones you like, set a diet preference, and step into a focused cook mode when it's time to actually make something.</p>
+
+    <p>The recipes come from six places: Epicurious, Budget Bytes, Serious Eats, The Kitchn, Minimalist Baker, and Love &amp; Lemons. Around ten thousand of them, all with photos, each linked back to its original source if you want to read more.</p>
+
+    <p>I built this over about two weeks — brainstorming with Claude, generating code with Cursor, and many evenings of trial and error. It's a desktop app centered on React, shipped inside Electron. Everything runs locally on your machine; nothing leaves it.</p>
+
+    <p class="vegan-note">One more thing: I'm vegan, so Fridge leans vegan-first by default. There's a switch on the home page if you want to see everything. <span class="leaf">🌱</span> I hope it's not too annoying.</p>
+
+    <p>If something breaks, or you have an idea, or you just want to say hi — <a href="mailto:nicocrisafulli@gmail.com">nicocrisafulli@gmail.com</a>.</p>
+
+    <p class="signoff">— Nico<br><span class="signoff-meta">Alameda, CA</span></p>
+  </div>
+</section>
+
+<!-- PAGE 3: HOW IT WORKS -->
+<section class="page">
+  <header class="page-header">
+    <span class="page-eyebrow">How it works</span>
+    <h2>Start with what's in your kitchen.</h2>
+  </header>
+
+  <div class="screenshot-block">
+    <img src="../screenshots/home.png" alt="Fridge home screen" class="screenshot">
+  </div>
+
+  <div class="two-col">
+    <div class="col">
+      <h3>The pantry</h3>
+      <p>Add ingredients you have on hand. Tap a chip to add it to your search. Ingredients on the countertop lists up to ten of your latest picks on the left; ingredients on the shelves, the rest of your saved pantry. Whatever you search for sticks around so you don't retype it next time.</p>
+    </div>
+    <div class="col">
+      <h3>The search</h3>
+      <p>Type ingredients into the search bar or tap pantry chips, then "Find recipes." You get a grid of matches ranked by how well they fit what you have — plus how many extra ingredients you'd need to buy.</p>
+    </div>
+  </div>
+
+  <div class="screenshot-block screenshot-block-secondary">
+    <img src="../screenshots/results.png" alt="Recipe results grid" class="screenshot screenshot-small">
+  </div>
+
+  <div class="two-col">
+    <div class="col">
+      <h3>Filter by diet</h3>
+      <p>Pick vegan, vegetarian, pescatarian, or carnivore. Fridge uses an ingredient-based inference (not certified labeling, but reliable for most cases). The default is vegan-first.</p>
+    </div>
+    <div class="col">
+      <h3>Save and revisit</h3>
+      <p>Hit the bookmark on any recipe. Saved recipes live on the home page, and your search history is one tap away if you want to find that thing you looked at last week.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PAGE 4: COOK MODE + TIPS -->
+<section class="page">
+  <header class="page-header">
+    <span class="page-eyebrow">Cooking</span>
+    <h2>When it's time to make it.</h2>
+  </header>
+
+  <div class="screenshot-block">
+    <img src="../screenshots/cook-mode.png" alt="Cook mode showing a single step in large text" class="screenshot">
+  </div>
+
+  <div class="prose-narrow">
+    <p>From any recipe detail page, hit <span class="ui-label">Enter cooking mode</span> to flip into a focused view: one step at a time, big readable text, hands-friendly. Click anywhere to advance, or use arrow keys if you're at a keyboard. Inline timers appear when a step mentions one — "simmer 15 minutes" gets a tappable timer right there in the step.</p>
+  </div>
+
+  <div class="tips-block">
+    <h3>A few small things worth knowing</h3>
+    <ul class="tips-list">
+      <li><span class="tip-label">Pantry rename:</span> in Pantry · Manage, click an ingredient name to fix typos. Renaming preserves usage history.</li>
+      <li><span class="tip-label">Source links:</span> on any local recipe, the "Recipe from …" link opens the original on the publisher's site. Use it for the full author's voice, reviews, and any photos beyond the hero shot.</li>
+      <li><span class="tip-label">Imperial measures:</span> recipes are converted to US imperial automatically (cups, tablespoons, vulgar fractions).</li>
+      <li><span class="tip-label">Cook mode keyboard:</span> right arrow or space to advance, left arrow to go back, escape to exit.</li>
+    </ul>
+  </div>
+
+  <footer class="page-footer">
+    <p>Made with <span class="heart">❤︎</span> in Alameda. <a href="mailto:nicocrisafulli@gmail.com">nicocrisafulli@gmail.com</a></p>
+  </footer>
+</section>
+
+</body>
+</html>

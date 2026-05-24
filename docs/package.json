@@ -1,0 +1,16 @@
+{
+  "name": "fridge-docs",
+  "version": "0.2.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "postinstall": "puppeteer browsers install chrome",
+    "render": "node render.js",
+    "render:install": "node render.js install-guide",
+    "render:booklet": "node render.js welcome-booklet",
+    "render:dmg-bg": "node render.js dmg-background"
+  },
+  "dependencies": {
+    "puppeteer": "^23.0.0"
+  }
+}

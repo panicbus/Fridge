@@ -1,7 +1,14 @@
 node_modules
 dist
 dist-electron
-release
+
+# Packaging output — release avoids wiping Vite's dist/
+release/
+docs-out/
+build/dmg-background.png
+
+# Doc rendering tooling
+docs/node_modules/
 *.log
 .DS_Store
 .env

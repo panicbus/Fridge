@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { APP_VERSION } from '../version';
 import './AboutPanel.css';
 
 export interface AboutPanelProps {
@@ -78,6 +79,9 @@ export function AboutPanel({ onClose }: AboutPanelProps) {
         </h1>
 
         <p className="about-panel-tagline">Cook what you have.</p>
+        <p className="about-panel-version" aria-label={`Version ${APP_VERSION}`}>
+          v{APP_VERSION}
+        </p>
 
         <p className="about-panel-description">
           A small desktop app that matches what&apos;s in your kitchen to

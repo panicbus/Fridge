@@ -1,9 +1,11 @@
 .pantry-card {
+  container-type: inline-size;
+  container-name: pantry-card;
   display: flex;
   flex-direction: column;
   background: var(--bg-pantry);
   border-radius: var(--radius-lg);
-  padding: 12px 14px 10px;
+  padding: 22px 24px 20px;
   box-sizing: border-box;
   color: var(--text-cream);
   min-height: 100%;
@@ -156,18 +158,37 @@
 }
 
 .pantry-card-split {
-  display: flex;
-  gap: 16px;
   flex: 1;
   min-height: 0;
+  display: grid;
+  /*
+   * Countertop | divider | shelves — fr tracks keep roughly the same % split as width changes.
+   * minmax(0, …fr) avoids overflow clipping long uppercase labels when the pantry column is narrow.
+   */
+  grid-template-columns: minmax(0, 42fr) 1px minmax(0, 58fr);
+  column-gap: 16px;
+  align-items: stretch;
 }
 
-.pantry-card-split--staples-only {
-  gap: 0;
+.pantry-card-split:not(.pantry-card-split--shelves-only) .pantry-col--recent {
+  grid-column: 1;
 }
 
-.pantry-card-split--staples-only .pantry-col--staples {
-  max-width: none;
+.pantry-card-split:not(.pantry-card-split--shelves-only) .pantry-divider {
+  grid-column: 2;
+}
+
+.pantry-card-split:not(.pantry-card-split--shelves-only) .pantry-col--shelves {
+  grid-column: 3;
+}
+
+.pantry-card-split--shelves-only {
+  column-gap: 0;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.pantry-card-split--shelves-only .pantry-col--shelves {
+  grid-column: 1;
 }
 
 .pantry-col {
@@ -177,22 +198,20 @@
 }
 
 .pantry-col--recent {
-  flex: 0 0 auto;
-  max-width: 280px;
+  min-width: 0;
 }
 
-.pantry-col--staples {
-  flex: 1;
+.pantry-col--shelves {
   min-width: 0;
 }
 
 .pantry-divider {
   width: 1px;
+  min-width: 1px;
   flex-shrink: 0;
-  align-self: center;
-  height: 80%;
-  max-height: 100%;
-  margin: 0 2px;
+  align-self: stretch;
+  height: auto;
+  margin: 0;
   background: rgba(245, 239, 228, 0.42);
   box-shadow: 0 0 0 1px rgba(26, 24, 21, 0.045);
 }
@@ -200,9 +219,25 @@
 .pantry-card-section-label {
   margin: 0 0 6px;
   font-size: 10px;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-cream-muted);
+  line-height: 1.35;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: manual;
+}
+
+@container pantry-card (max-width: 360px) {
+  .pantry-card-section-label {
+    letter-spacing: 0.06em;
+    font-size: 9px;
+  }
+
+  .pantry-card-split:not(.pantry-card-split--shelves-only) {
+    column-gap: 12px;
+    grid-template-columns: minmax(0, 40fr) 1px minmax(0, 60fr);
+  }
 }
 
 .pantry-chip-wrap {
@@ -233,8 +268,23 @@
   max-height: 140px;
 }
 
-.pantry-chip-scroll--staples {
+.pantry-chip-scroll--shelves {
   align-content: flex-start;
+  padding-inline-end: 10px;
+}
+
+.pantry-card-empty-shelves {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--text-cream);
+  opacity: 0.55;
+  padding: 12px 4px;
+  padding-right: 8px;
+  margin: 0;
+  line-height: 1.45;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .pantry-chip {

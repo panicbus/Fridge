@@ -100,7 +100,17 @@
   font-style: italic;
   font-size: 16px;
   color: var(--text-muted);
-  margin: 0 0 24px;
+  margin: 0 0 8px;
+}
+
+.about-panel-version {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  opacity: 0.65;
+  margin: 0 0 22px;
 }
 
 .about-panel-description {

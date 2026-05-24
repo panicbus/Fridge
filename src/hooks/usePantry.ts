@@ -2,6 +2,7 @@ import {
   getPantry,
   getRecentlyUsed,
   getStaples,
+  RECENT_LIMIT,
   searchPantry,
   type PantryItem,
 } from '../services/pantry';
@@ -43,7 +44,7 @@ export function usePantry(
   }
 
   return {
-    recent: filterActive(getRecentlyUsed(10)),
+    recent: filterActive(getRecentlyUsed(RECENT_LIMIT)),
     staples: filterActive(getStaples(activeIngredients)),
     total,
     searchResults: [],

@@ -34,10 +34,51 @@ Spoonacular provides authoritative diet flags. For TheMealDB and **local trove**
 
 ```bash
 npm install
-npm run dev      # Vite + Electron (Dock shows Fridge icon via app.dock.setIcon)
-npm run build    # Typecheck, bundle renderer, compile Electron main
-npm run dist:mac # Packaged macOS app + dmg/zip (uses build/icon.icns)
+npm run dev           # Vite + Electron (Dock shows Fridge icon via app.dock.setIcon)
+npm run build         # Typecheck, bundle renderer, compile Electron main
+npm run package       # Ship build + universal macOS Fridge.dmg (unsigned; see electron-builder.yml)
+npm run package:dir   # Same build, output .app bundle only (no .dmg wiring)
+npm run dist:mac      # Alias for `npm run package`
 ```
+
+## Building a release
+
+`npm run package` invokes **electron-builder** with **`--universal`** so friends get **one** `Fridge.dmg` with Apple Silicon **and** Intel slices (electron-builder rejects `mac.arch` lists in YAML the way npm scripts used to mimic; the flag is the supported path).
+
+Vite writes the renderer to **`dist/`**; **`release/`** is only for installers so packaging never wipes the renderer bundle.
+
+To produce a shippable **`release/Fridge.dmg`** (universal Intel + Apple Silicon, unsigned installer):
+
+```bash
+# 1. Render the DMG installer background (after edits to docs/dmg-background/ or once before first package)
+cd docs && npm install && npm run render:dmg-bg && cd ..
+
+# 2. Ensure local recipe trove assets exist under assets/ (see Local recipe trove below)
+
+# 3. Build and package
+npm run package
+
+# Output: release/Fridge.dmg
+```
+
+Quick local smoke of the packaged app without creating a `.dmg`:
+
+```bash
+npm run package:dir
+# Open release/mac/Fridge.app (path may vary slightly by electron-builder version)
+```
+
+To regenerate the install guide and welcome booklet PDFs (after copying screenshots into `docs/screenshots/`):
+
+```bash
+cd docs
+npm install
+npm run render:install
+npm run render:booklet
+# Output: docs-out/Fridge-Install-Guide.pdf and docs-out/Fridge-Welcome.pdf (project root)
+```
+
+Bundle **`release/Fridge.dmg`** with both PDFs in a ZIP or folder for distribution.
 
 ## Project layout
 

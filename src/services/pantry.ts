@@ -6,6 +6,9 @@ import {
 
 const STORAGE_KEY = 'fridge.pantry';
 
+/** Home pantry countertop: top N rows by lastUsed (`getRecentlyUsed`). Shelves shows the rest (see `getStaples`). */
+export const RECENT_LIMIT = 10;
+
 export interface PantryItem {
   name: string;
   lastUsed: number;
@@ -156,13 +159,13 @@ export function bumpUsage(names: string[]): void {
   if (changed) write(mergePantryByIngredientKey(items));
 }
 
-/** Top N by lastUsed (consumer filters active search ingredients). Default 10. */
-export function getRecentlyUsed(limit = 10): PantryItem[] {
+/** Top N by lastUsed (consumer filters active search ingredients). Default `RECENT_LIMIT`. */
+export function getRecentlyUsed(limit = RECENT_LIMIT): PantryItem[] {
   return getPantry().slice(0, limit);
 }
 
 /**
- * Items beyond the top 10 recently-used, excluding names in excludeNames (e.g. bag).
+ * Shelf items — pantry rows beyond countertop recency cutoff, excluding names in excludeNames (e.g. bag).
  */
 export function getStaples(excludeNames: string[] = []): PantryItem[] {
   const ex = new Set(
@@ -170,7 +173,7 @@ export function getStaples(excludeNames: string[] = []): PantryItem[] {
   );
   const sorted = getPantry();
   const recentKeys = new Set(
-    sorted.slice(0, 10).map((i) => ingredientDedupeKey(i.name)),
+    sorted.slice(0, RECENT_LIMIT).map((i) => ingredientDedupeKey(i.name)),
   );
   return sorted.filter((i) => {
     const k = ingredientDedupeKey(i.name);
@@ -178,7 +181,7 @@ export function getStaples(excludeNames: string[] = []): PantryItem[] {
   });
 }
 
-/** Case-insensitive substring match; returns matching items (no recent/staples split). */
+/** Case-insensitive substring match; returns matching items (no countertop/shelves split). */
 export function searchPantry(query: string): PantryItem[] {
   const q = query.trim().toLowerCase();
   if (!q) return getPantry();

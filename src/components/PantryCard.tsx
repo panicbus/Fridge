@@ -106,11 +106,11 @@ export default function PantryCard({
           </div>
         ) : (
           <div
-            className={`pantry-card-split ${!showRecentColumn ? 'pantry-card-split--staples-only' : ''}`}
+            className={`pantry-card-split ${!showRecentColumn ? 'pantry-card-split--shelves-only' : ''}`}
           >
             {showRecentColumn ? (
               <div className="pantry-col pantry-col--recent">
-                <p className="pantry-card-section-label">recently used</p>
+                <p className="pantry-card-section-label">Ingredients on the countertop</p>
                 <div className="pantry-chip-wrap">
                   {recent.map((item) => (
                     <button
@@ -126,21 +126,27 @@ export default function PantryCard({
               </div>
             ) : null}
             {showDivider ? <div className="pantry-divider" aria-hidden /> : null}
-            <div className="pantry-col pantry-col--staples">
-              <p className="pantry-card-section-label">staples</p>
-              <div className="pantry-chip-scroll pantry-chip-scroll--staples">
-                <div className="pantry-chip-wrap">
-                  {staples.map((item) => (
-                    <button
-                      key={item.name}
-                      type="button"
-                      className="pantry-chip"
-                      onClick={() => chipClick(item.name)}
-                    >
-                      + {item.name}
-                    </button>
-                  ))}
-                </div>
+            <div className="pantry-col pantry-col--shelves">
+              <p className="pantry-card-section-label">Ingredients on the shelves</p>
+              <div className="pantry-chip-scroll pantry-chip-scroll--shelves">
+                {staples.length > 0 ? (
+                  <div className="pantry-chip-wrap">
+                    {staples.map((item) => (
+                      <button
+                        key={item.name}
+                        type="button"
+                        className="pantry-chip"
+                        onClick={() => chipClick(item.name)}
+                      >
+                        + {item.name}
+                      </button>
+                    ))}
+                  </div>
+                ) : recent.length > 0 ? (
+                  <p className="pantry-card-empty-shelves">
+                    Your shelves will fill as you add more.
+                  </p>
+                ) : null}
               </div>
             </div>
           </div>

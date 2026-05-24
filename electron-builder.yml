@@ -1,25 +1,55 @@
-# Packaging + macOS bundle icon (Dock / Finder). Run: npm run dist:mac
-appId: com.fridge.app
+# macOS DMG packaging. Renderer lives in ./dist from Vite; artifacts go to ./release (avoid wiping dist).
+appId: com.nicocrisafulli.fridge
 productName: Fridge
+copyright: Copyright © 2026 Nico Crisafulli
+artifactName: Fridge.${ext}
+
 directories:
   output: release
+
+mac:
+  category: public.app-category.food-and-drink
+  icon: build/icon.icns
+  target:
+    - dmg
+  hardenedRuntime: false
+  gatekeeperAssess: false
+  identity: null
+
+dmg:
+  title: Fridge
+  background: build/dmg-background.png
+  format: UDZO
+  writeUpdateInfo: false
+  window:
+    width: 540
+    height: 380
+  contents:
+    - x: 140
+      y: 200
+    - x: 400
+      y: 200
+      type: link
+      path: /Applications
+  iconSize: 96
+  iconTextSize: 12
+
 files:
   - dist/**/*
   - dist-electron/**/*
-  - package.json
   - node_modules/sql.js/**/*
+  - package.json
+  - '!**/*.map'
+  - '!**/*.ts'
+
 asarUnpack:
   - node_modules/sql.js/dist/**
+
 extraResources:
+  # Dock / window raster icons (electron/main.ts → process.resourcesPath/build)
   - from: build
     to: build
   - from: assets/recipes.db
     to: assets/recipes.db
   - from: assets/recipe-images
     to: assets/recipe-images
-mac:
-  icon: build/icon.icns
-  category: public.app-category.food-and-drink
-  target:
-    - dmg
-    - zip
