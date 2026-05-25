@@ -194,6 +194,44 @@
   margin-right: 6px;
 }
 
+/* Compact block above the main step text so measures stay visible when the step body is tall */
+.cook-mode-ingredients.cook-mode-ingredients--above-step {
+  align-self: center;
+  display: inline-block;
+  width: auto;
+  max-width: min(42em, 94vw);
+  margin-inline: auto;
+  margin-bottom: 4px;
+  padding: 12px 18px;
+  background: rgba(255, 251, 243, 0.05);
+  border: 1px solid rgba(255, 251, 243, 0.08);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.cook-mode-ingredients--above-step .cook-mode-ingredients-label {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  margin-bottom: 8px;
+  text-align: center;
+  color: rgba(245, 239, 228, 0.5);
+}
+
+.cook-mode-ingredients--above-step .cook-mode-ingredients-list {
+  font-size: clamp(12px, 1.35vmin, 15px);
+  gap: 3px;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.cook-mode-ingredients--above-step .cook-mode-ingredients-list li {
+  text-align: center;
+}
+
+.cook-mode-ingredients--above-step .ing-measure {
+  margin-right: 5px;
+}
+
 /* Timer slot */
 .cook-mode-timer {
   margin-top: 0;

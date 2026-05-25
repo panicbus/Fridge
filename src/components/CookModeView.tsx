@@ -428,18 +428,11 @@ export default function CookModeView({
         </div>
 
         <div className="cook-mode-step-column">
-          <div
-            ref={textFitWrapRef}
-            className="cook-mode-step-text-fit"
-          >
-            <p ref={stepTextRef} className="cook-mode-step-text">
-              {stepTextDisplay}
-            </p>
-          </div>
-
           {stepIngredients.length > 0 ? (
-            <div className="cook-mode-ingredients">
-              <div className="cook-mode-ingredients-label">For this step:</div>
+            <div className="cook-mode-ingredients cook-mode-ingredients--above-step">
+              <div className="cook-mode-ingredients-label">
+                Ingredients for this step
+              </div>
               <ul className="cook-mode-ingredients-list">
                 {stepIngredients.map((ing) => (
                   <li key={stripIngredientRetailParen(ing.name)}>
@@ -454,6 +447,15 @@ export default function CookModeView({
               </ul>
             </div>
           ) : null}
+
+          <div
+            ref={textFitWrapRef}
+            className="cook-mode-step-text-fit"
+          >
+            <p ref={stepTextRef} className="cook-mode-step-text">
+              {stepTextDisplay}
+            </p>
+          </div>
 
           {detectedTimer && timersEnabled ? (
             <div
