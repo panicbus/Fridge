@@ -75,7 +75,6 @@ export default function Header({
                 v{APP_VERSION}
               </span>
             </div>
-            <div className="header-subtitle">cook what you have</div>
           </div>
         </div>
       </div>

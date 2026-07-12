@@ -36,32 +36,53 @@ Spoonacular provides authoritative diet flags. For TheMealDB and **local trove**
 npm install
 npm run dev           # Vite + Electron (Dock shows Fridge icon via app.dock.setIcon)
 npm run build         # Typecheck, bundle renderer, compile Electron main
-npm run package       # Ship build + universal macOS Fridge.dmg (unsigned; see electron-builder.yml)
+npm run dist:mac      # Signed, notarized universal macOS Fridge.dmg + .zip (see Signing below)
 npm run package:dir   # Same build, output .app bundle only (no .dmg wiring)
-npm run dist:mac      # Alias for `npm run package`
 ```
 
 ## Building a release
 
-`npm run package` invokes **electron-builder** with **`--universal`** so friends get **one** `Fridge.dmg` with Apple Silicon **and** Intel slices (electron-builder rejects `mac.arch` lists in YAML the way npm scripts used to mimic; the flag is the supported path).
+`npm run dist:mac` invokes **electron-builder** with a **universal** binary (Apple Silicon + Intel) and produces signed, notarized **`Fridge.dmg`** and **`Fridge.zip`** in **`release/`**.
 
 Vite writes the renderer to **`dist/`**; **`release/`** is only for installers so packaging never wipes the renderer bundle.
 
-To produce a shippable **`release/Fridge.dmg`** (universal Intel + Apple Silicon, unsigned installer):
+To produce a shippable release:
 
 ```bash
-# 1. Render the DMG installer background (after edits to docs/dmg-background/ or once before first package)
+# 1. Render the DMG installer background (after edits to docs/dmg-background/ or once before first dist)
 cd docs && npm install && npm run render:dmg-bg && cd ..
 
 # 2. Ensure local recipe trove assets exist under assets/ (see Local recipe trove below)
 
-# 3. Build and package
-npm run package
+# 3. Create .env.build with notarization credentials (see Signing and notarization below)
 
-# Output: release/Fridge.dmg
+# 4. Build and package
+npm run dist:mac
+
+# Output: release/Fridge.dmg and release/Fridge.zip
 ```
 
-Quick local smoke of the packaged app without creating a `.dmg`:
+## Signing and notarization
+
+Fridge is code-signed with a Developer ID Application certificate and notarized by Apple. Friends installing the app see no Gatekeeper warnings.
+
+Create a gitignored **`.env.build`** file in the project root (copy from **`.env.build.example`**):
+
+```bash
+APPLE_ID=your-apple-id@example.com
+APPLE_APP_SPECIFIC_PASSWORD=xxxx-xxxx-xxxx-xxxx
+APPLE_TEAM_ID=KB8N3Q3ZAF
+```
+
+**Important:** `APPLE_APP_SPECIFIC_PASSWORD` is **not** your normal Apple ID password. Generate one at [appleid.apple.com](https://appleid.apple.com) → Sign-In and Security → App-Specific Passwords. Use no quotes in `.env.build`. The email must be the Apple ID tied to developer team **KB8N3Q3ZAF**.
+
+`npm run dist:mac` validates credentials with Apple **before** packaging. If you see `HTTP status code: 401` or `Invalid credentials`, regenerate the app-specific password and update `.env.build`.
+
+The Developer ID Application certificate must be installed in your login keychain. **`npm run dist:mac`** sources `.env.build`, validates credentials, clears extended attributes on the Electron distribution (and on the packed `.app` via an afterPack hook), builds to **`/var/tmp/fridge-app-release`** to avoid iCloud interfering with codesign, then copies artifacts to **`./release/`**.
+
+**DMG note:** The app bundle is large (~650MB with recipe images). electron-builder's built-in DMG step under-allocates disk space, so **`scripts/create-dmg.sh`** builds `Fridge.dmg` after the signed `.zip` / `.app` are produced. Eject any mounted **Fridge** disk image before packaging.
+
+For quick local smoke of the packaged app without creating a `.dmg`:
 
 ```bash
 npm run package:dir

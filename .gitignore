@@ -13,6 +13,14 @@ docs/node_modules/
 .DS_Store
 .env
 
+# Signing / notarization
+*.p12
+*.cer
+*.mobileprovision
+.env.local
+.env.build
+/var/tmp/fridge-app-release
+
 # Bundled local recipe trove (generate via scripts/prep-recipes before packaging)
 assets/recipes.db
 assets/recipe-images/

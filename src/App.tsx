@@ -76,8 +76,8 @@ export default function App() {
           />
 
           <section className="home-top">
-            <h1 className="headline">
-              What&apos;s <em>in your kitchen?</em>
+            <h1 className="home-headline">
+              Cook what you <em>have</em>.
             </h1>
 
             <IngredientBag

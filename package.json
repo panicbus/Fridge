@@ -1,15 +1,14 @@
 {
   "name": "fridge",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "What's in your fridge? Get recipes.",
   "main": "dist-electron/main.js",
   "scripts": {
     "compile:electron": "tsc -p tsconfig.electron.json",
     "dev": "npm run compile:electron && concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
     "build": "tsc && vite build && npm run compile:electron",
-    "package": "npm run build && electron-builder --mac --universal",
     "package:dir": "npm run build && electron-builder --mac --dir --universal",
-    "dist:mac": "npm run package",
+    "dist:mac": "npm run build && bash scripts/dist-mac-signed.sh",
     "preview": "vite preview",
     "test": "vitest run",
     "electron": "npm run compile:electron && electron ."

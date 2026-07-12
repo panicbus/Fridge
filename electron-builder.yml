@@ -1,22 +1,31 @@
-# macOS DMG packaging. Renderer lives in ./dist from Vite; artifacts go to ./release (avoid wiping dist).
+# macOS DMG/ZIP packaging. Renderer lives in ./dist from Vite; artifacts go to ./release (avoid wiping dist).
 appId: com.nicocrisafulli.fridge
 productName: Fridge
 copyright: Copyright © 2026 Nico Crisafulli
 artifactName: Fridge.${ext}
 
+afterPack: scripts/electron-after-pack.cjs
+
 directories:
   output: release
+  buildResources: buildResources
 
 mac:
   category: public.app-category.food-and-drink
   icon: build/icon.icns
-  target:
-    - dmg
-  hardenedRuntime: false
+  identity: NICHOLAS FREEDOM CRISAFULLI (KB8N3Q3ZAF)
+  hardenedRuntime: true
   gatekeeperAssess: false
-  identity: null
+  entitlements: buildResources/entitlements.mac.plist
+  entitlementsInherit: buildResources/entitlements.mac.plist
+  target:
+    - target: zip
+      arch: universal
+  notarize:
+    teamId: KB8N3Q3ZAF
 
 dmg:
+  sign: false
   title: Fridge
   background: build/dmg-background.png
   format: UDZO
@@ -43,6 +52,8 @@ files:
   - '!**/*.ts'
 
 asarUnpack:
+  - '**/*.node'
+  - '**/node_modules/better-sqlite3/**'
   - node_modules/sql.js/dist/**
 
 extraResources:

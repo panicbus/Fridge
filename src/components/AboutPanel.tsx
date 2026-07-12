@@ -78,15 +78,14 @@ export function AboutPanel({ onClose }: AboutPanelProps) {
           fridge<span className="about-panel-title-dot">.</span>
         </h1>
 
-        <p className="about-panel-tagline">Cook what you have.</p>
         <p className="about-panel-version" aria-label={`Version ${APP_VERSION}`}>
           v{APP_VERSION}
         </p>
 
         <p className="about-panel-description">
-          A small desktop app that matches what&apos;s in your kitchen to
-          recipes worth making. Search by ingredients, filter by diet, save what
-          you love, and step into a focused cook mode when it&apos;s time to make
+          A small desktop app that matches the ingredients you have to recipes
+          worth making. Search by ingredients, filter by diet, save what you
+          love, and step into a focused cook mode when it&apos;s time to make
           it.
         </p>
 
